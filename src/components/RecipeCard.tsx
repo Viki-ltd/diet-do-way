@@ -1,110 +1,83 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, ExternalLink } from "lucide-react";
+import { Clock, Users, ChefHat } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export interface Recipe {
   id: string;
   title: string;
+  description: string;
   image: string;
-  prepTime: string;
+  cookTime: string;
+  difficulty: string;
   servings: number;
-  dietaryTags: string[];
-  steps: string[];
-  ingredients: {
-    name: string;
-    amount: string;
-    affiliateUrl?: string;
-  }[];
+  category: string;
+  ingredients: string[];
+  instructions: string[];
+  tags: string[];
+  // Legacy fields for compatibility
+  prepTime?: string;
+  dietaryTags?: string[];
+  steps?: string[];
 }
 
 interface RecipeCardProps {
   recipe: Recipe;
 }
 
-export const RecipeCard = ({ recipe }: RecipeCardProps) => {
+const RecipeCard = ({ recipe }: RecipeCardProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/recipes/${recipe.id}`);
+  };
+
   return (
-    <Card className="group hover:shadow-card transition-all duration-200 hover:-translate-y-1 overflow-hidden">
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <img
-          src={recipe.image}
-          alt={recipe.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-        />
-        <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-          {recipe.dietaryTags.map((tag) => (
-            <Badge
-              key={tag}
-              variant="secondary"
-              className="text-xs bg-background/90 backdrop-blur-sm"
-            >
+    <Card className="group cursor-pointer h-full overflow-hidden transition-all duration-300 hover:shadow-luxury-lg hover:scale-[1.02] bg-gradient-to-br from-card to-luxury-cream border-luxury-gold/20" onClick={handleClick}>
+      <CardHeader className="p-0">
+        <div className="relative overflow-hidden">
+          <img 
+            src={`https://images.unsplash.com/${recipe.image}?w=400&h=300&fit=crop&auto=format`}
+            alt={recipe.title} 
+            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <Badge className="absolute top-3 right-3 bg-luxury-gold text-luxury-navy font-semibold">
+            {recipe.category}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 space-y-3">
+        <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
+          {recipe.title}
+        </CardTitle>
+        <p className="text-muted-foreground text-sm line-clamp-2">{recipe.description}</p>
+        
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Clock className="w-4 h-4 text-luxury-gold" />
+            <span>{recipe.cookTime}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users className="w-4 h-4 text-luxury-gold" />
+            <span>{recipe.servings}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <ChefHat className="w-4 h-4 text-luxury-gold" />
+            <span>{recipe.difficulty}</span>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          {recipe.tags.slice(0, 3).map((tag) => (
+            <Badge key={tag} variant="secondary" className="text-xs px-2 py-1 bg-luxury-gold/10 text-luxury-navy border-luxury-gold/30">
               {tag}
             </Badge>
           ))}
         </div>
-      </div>
-      
-      <CardContent className="p-4 space-y-4">
-        <div>
-          <h3 className="font-semibold text-lg text-foreground line-clamp-2">
-            {recipe.title}
-          </h3>
-          
-          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{recipe.prepTime}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              <span>{recipe.servings} servings</span>
-            </div>
-          </div>
-        </div>
-        
-        <div>
-          <h4 className="font-medium text-sm mb-2">Quick Steps:</h4>
-          <ol className="text-sm text-muted-foreground space-y-1">
-            {recipe.steps.slice(0, 3).map((step, index) => (
-              <li key={index} className="flex gap-2">
-                <span className="text-fresh-green font-medium">{index + 1}.</span>
-                <span>{step}</span>
-              </li>
-            ))}
-            {recipe.steps.length > 3 && (
-              <li className="text-xs italic">...and {recipe.steps.length - 3} more steps</li>
-            )}
-          </ol>
-        </div>
-        
-        <div>
-          <h4 className="font-medium text-sm mb-2">Shop Ingredients:</h4>
-          <div className="flex flex-wrap gap-2">
-            {recipe.ingredients.slice(0, 3).map((ingredient, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                className="text-xs h-7"
-                onClick={() => ingredient.affiliateUrl && window.open(ingredient.affiliateUrl, '_blank')}
-                disabled={!ingredient.affiliateUrl}
-              >
-                {ingredient.name}
-                {ingredient.affiliateUrl && <ExternalLink className="h-3 w-3 ml-1" />}
-              </Button>
-            ))}
-            {recipe.ingredients.length > 3 && (
-              <span className="text-xs text-muted-foreground self-center">
-                +{recipe.ingredients.length - 3} more
-              </span>
-            )}
-          </div>
-        </div>
-        
-        <Button variant="fresh" className="w-full">
-          View Full Recipe
-        </Button>
       </CardContent>
     </Card>
   );
 };
+
+export default RecipeCard;

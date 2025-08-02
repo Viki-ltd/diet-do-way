@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { OnboardingForm, DietaryPreferences } from "@/components/OnboardingForm";
-import { ProductCard } from "@/components/ProductCard";
-import { RecipeCard } from "@/components/RecipeCard";
+import ProductCard from "@/components/ProductCard";
+import RecipeCard from "@/components/RecipeCard";
 import { FilterSidebar, Filters } from "@/components/FilterSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

@@ -27,6 +27,9 @@ export const Header = ({ showFilters, onToggleFilters }: HeaderProps) => {
             <Link to="/local-business" className="text-muted-foreground hover:text-foreground transition-colors">
               Local Partners
             </Link>
+            <Link to="/gift-hampers" className="text-muted-foreground hover:text-foreground transition-colors">
+              Gift Hampers
+            </Link>
             <Link to="/advertise" className="text-muted-foreground hover:text-foreground transition-colors">
               Advertise
             </Link>

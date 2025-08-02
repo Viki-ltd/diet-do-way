@@ -10,6 +10,7 @@ import RecipeDetail from "./pages/RecipeDetail";
 import LocalBusiness from "./pages/LocalBusiness";
 import Advertise from "./pages/Advertise";
 import Profile from "./pages/Profile";
+import GiftHampers from "./pages/GiftHampers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/recipes/:id" element={<RecipeDetail />} />
           <Route path="/local-business" element={<LocalBusiness />} />
           <Route path="/advertise" element={<Advertise />} />
+          <Route path="/gift-hampers" element={<GiftHampers />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

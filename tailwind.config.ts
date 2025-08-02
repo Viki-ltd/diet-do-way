@@ -57,6 +57,10 @@ export default {
 				'trade-gold': 'hsl(var(--trade-gold))',
 				'trade-green': 'hsl(var(--trade-green))',
 				'cream': 'hsl(var(--cream))',
+				'luxury-gold': 'hsl(var(--luxury-gold))',
+				'luxury-gold-dark': 'hsl(var(--luxury-gold-dark))',
+				'luxury-navy': 'hsl(var(--luxury-navy))',
+				'luxury-cream': 'hsl(var(--luxury-cream))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -94,6 +98,14 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			backgroundImage: {
+				'gradient-luxury': 'var(--gradient-luxury)',
+				'gradient-elegant': 'var(--gradient-elegant)',
+			},
+			boxShadow: {
+				'luxury': '0 10px 40px -10px hsl(var(--luxury-shadow))',
+				'luxury-lg': '0 20px 60px -15px hsl(var(--luxury-shadow-lg))',
 			}
 		}
 	},

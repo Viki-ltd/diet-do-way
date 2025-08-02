@@ -43,9 +43,19 @@ All colors MUST be HSL.
     --trade-green: 142 76% 36%;
     --cream: 32 50% 95%;
     
+    /* Luxury Design Tokens */
+    --luxury-gold: 45 100% 75%;
+    --luxury-gold-dark: 38 90% 65%;
+    --luxury-navy: 210 40% 15%;
+    --luxury-cream: 45 20% 95%;
+    --luxury-shadow: 0 0 0 / 0.15;
+    --luxury-shadow-lg: 0 0 0 / 0.25;
+    
     /* Gradients */
     --gradient-trade: linear-gradient(135deg, hsl(var(--trade-blue)), hsl(var(--trade-gold)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--cream)));
+    --gradient-luxury: linear-gradient(135deg, hsl(var(--luxury-gold)), hsl(var(--luxury-gold-dark)));
+    --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--luxury-cream)));
     
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(var(--trade-blue) / 0.1);
