@@ -12,7 +12,7 @@ export interface Recipe {
   difficulty: string;
   servings: number;
   category: string;
-  ingredients: string[];
+  ingredients: { name: string; amount: string }[];
   instructions: string[];
   tags: string[];
   // Legacy fields for compatibility

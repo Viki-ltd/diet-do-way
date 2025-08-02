@@ -119,13 +119,13 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "Healthy Bowls",
     ingredients: [
-      "1 cup quinoa",
-      "2 ripe avocados",
-      "1 cup cherry tomatoes",
-      "1/2 cup feta cheese",
-      "2 tbsp olive oil",
-      "1 lemon (juiced)",
-      "Salt and pepper to taste"
+      { name: "Quinoa", amount: "1 cup" },
+      { name: "Ripe avocados", amount: "2" },
+      { name: "Cherry tomatoes", amount: "1 cup" },
+      { name: "Feta cheese", amount: "1/2 cup" },
+      { name: "Olive oil", amount: "2 tbsp" },
+      { name: "Lemon juice", amount: "1 lemon" },
+      { name: "Salt and pepper", amount: "to taste" }
     ],
     instructions: [
       "Convince quinoa it's actually cool by rinsing until it stops judging you",
@@ -147,13 +147,13 @@ export const mockRecipes: Recipe[] = [
     servings: 6,
     category: "Italian",
     ingredients: [
-      "2 cups Arborio rice",
-      "1 pinch saffron threads",
-      "6 cups warm vegetable stock",
-      "1 cup grated Parmesan",
-      "1 onion, diced",
-      "1/2 cup white wine",
-      "2 tbsp butter"
+      { name: "Arborio rice", amount: "2 cups" },
+      { name: "Saffron threads", amount: "1 pinch" },
+      { name: "Warm vegetable stock", amount: "6 cups" },
+      { name: "Grated Parmesan", amount: "1 cup" },
+      { name: "Onion, diced", amount: "1" },
+      { name: "White wine", amount: "1/2 cup" },
+      { name: "Butter", amount: "2 tbsp" }
     ],
     instructions: [
       "Heat stock like you're warming a relationship - keep it warm but not boiling",
@@ -176,12 +176,12 @@ export const mockRecipes: Recipe[] = [
     servings: 1,
     category: "Desserts",
     ingredients: [
-      "2 tbsp cocoa powder",
-      "3 tbsp flour",
-      "2 tbsp sugar",
-      "3 tbsp milk",
-      "2 tbsp vegetable oil",
-      "1 pinch salt"
+      { name: "Cocoa powder", amount: "2 tbsp" },
+      { name: "Flour", amount: "3 tbsp" },
+      { name: "Sugar", amount: "2 tbsp" },
+      { name: "Milk", amount: "3 tbsp" },
+      { name: "Vegetable oil", amount: "2 tbsp" },
+      { name: "Salt", amount: "1 pinch" }
     ],
     instructions: [
       "Mix dry ingredients while contemplating life choices",
@@ -203,12 +203,12 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "Italian",
     ingredients: [
-      "1 lb fettuccine",
-      "3 tbsp truffle oil",
-      "1 cup grated Parmesan",
-      "1/4 cup fresh parsley",
-      "Salt and pepper",
-      "2 cloves garlic"
+      { name: "Fettuccine", amount: "1 lb" },
+      { name: "Truffle oil", amount: "3 tbsp" },
+      { name: "Grated Parmesan", amount: "1 cup" },
+      { name: "Fresh parsley", amount: "1/4 cup" },
+      { name: "Salt and pepper", amount: "to taste" },
+      { name: "Garlic cloves", amount: "2" }
     ],
     instructions: [
       "Boil pasta like your reputation depends on it",
@@ -230,11 +230,11 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "Japanese",
     ingredients: [
-      "3 tbsp miso paste",
-      "4 cups dashi stock",
-      "1/2 cup silken tofu, diced",
-      "2 tbsp wakame seaweed",
-      "2 green onions, sliced"
+      { name: "Miso paste", amount: "3 tbsp" },
+      { name: "Dashi stock", amount: "4 cups" },
+      { name: "Silken tofu, diced", amount: "1/2 cup" },
+      { name: "Wakame seaweed", amount: "2 tbsp" },
+      { name: "Green onions, sliced", amount: "2" }
     ],
     instructions: [
       "Heat dashi like you're summoning ancient spirits",
