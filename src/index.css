@@ -36,20 +36,20 @@ All colors MUST be HSL.
     --input: 32 20% 88%;
     --ring: 142 76% 36%;
 
-    /* Fresh grocery theme colors */
-    --fresh-green: 142 76% 36%;
-    --fresh-green-light: 142 60% 85%;
-    --warm-orange: 35 80% 70%;
-    --earth-brown: 25 15% 15%;
+    /* ImporTrade theme colors */
+    --trade-blue: 210 100% 50%;
+    --trade-blue-light: 210 60% 85%;
+    --trade-gold: 45 90% 60%;
+    --trade-green: 142 76% 36%;
     --cream: 32 50% 95%;
     
     /* Gradients */
-    --gradient-fresh: linear-gradient(135deg, hsl(var(--fresh-green)), hsl(var(--warm-orange)));
+    --gradient-trade: linear-gradient(135deg, hsl(var(--trade-blue)), hsl(var(--trade-gold)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--cream)));
     
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(var(--fresh-green) / 0.1);
-    --shadow-card: 0 8px 32px -8px hsl(var(--fresh-green) / 0.15);
+    --shadow-soft: 0 4px 20px -4px hsl(var(--trade-blue) / 0.1);
+    --shadow-card: 0 8px 32px -8px hsl(var(--trade-blue) / 0.15);
 
     --radius: 0.5rem;
 
