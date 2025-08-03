@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { FilterSidebar } from "@/components/FilterSidebar";
+import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import ProductCard from "@/components/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -63,6 +64,9 @@ export default function Products() {
 
           {/* Main Content */}
           <div className="flex-1">
+            {/* Advertising Banner */}
+            <AdvertisingBanner variant="premium" className="mb-6" />
+            
             <div className="mb-6">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />

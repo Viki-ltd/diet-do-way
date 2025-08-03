@@ -25,15 +25,15 @@ const Profile = () => {
   ];
 
   const mockSavedItems = [
-    { id: "1", name: "Authentic Japanese Miso Paste", price: "$12.99", image: "/placeholder.svg" },
-    { id: "2", name: "Premium Italian Truffle Oil", price: "$24.99", image: "/placeholder.svg" },
-    { id: "3", name: "Organic Himalayan Pink Salt", price: "$8.99", image: "/placeholder.svg" },
+    { id: "1", name: "Authentic Japanese Miso Paste", price: "$12.99", image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=300" },
+    { id: "2", name: "Premium Italian Truffle Oil", price: "$24.99", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300" },
+    { id: "3", name: "Organic Himalayan Pink Salt", price: "$8.99", image: "https://images.unsplash.com/photo-1586816001966-79b736744398?w=300" },
   ];
 
   const mockRecentlyViewed = [
-    { id: "1", name: "Thai Green Curry Recipe", type: "Recipe", image: "/placeholder.svg" },
-    { id: "2", name: "French Brie Cheese", type: "Product", image: "/placeholder.svg" },
-    { id: "3", name: "Mediterranean Quinoa Salad", type: "Recipe", image: "/placeholder.svg" },
+    { id: "1", name: "Thai Green Curry Recipe", type: "Recipe", image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300" },
+    { id: "2", name: "French Brie Cheese", type: "Product", image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300" },
+    { id: "3", name: "Mediterranean Quinoa Salad", type: "Recipe", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300" },
   ];
 
   return (
@@ -44,7 +44,7 @@ const Profile = () => {
         {/* Profile Header */}
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <Avatar className="w-24 h-24">
-            <AvatarImage src="/placeholder.svg" />
+            <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -55,7 +55,7 @@ const Profile = () => {
               <Badge variant="outline">Food Enthusiast</Badge>
             </div>
           </div>
-          <Button variant="outline">Edit Profile</Button>
+          <Button variant="luxury">Edit Profile</Button>
         </div>
 
         {/* Profile Tabs */}
@@ -118,7 +118,7 @@ const Profile = () => {
                       <h3 className="font-semibold text-sm mb-2">{item.name}</h3>
                       <div className="flex justify-between items-center">
                         <span className="font-bold text-primary">{item.price}</span>
-                        <Button size="sm">Add to Cart</Button>
+                        <Button size="sm" variant="luxury">Add to Cart</Button>
                       </div>
                     </div>
                   ))}
@@ -177,7 +177,7 @@ const Profile = () => {
                     <Label htmlFor="phone">Phone</Label>
                     <Input id="phone" defaultValue="+1 (555) 123-4567" />
                   </div>
-                  <Button>Save Changes</Button>
+                  <Button variant="luxury">Save Changes</Button>
                 </CardContent>
               </Card>
 

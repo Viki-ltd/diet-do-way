@@ -9,7 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { mockProducts, mockRecipes } from "@/data/mockData";
-import heroImage from "@/assets/hero-grocery.jpg";
+import heroImage from "@/assets/hero-importrade.jpg";
+import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { Search, Star, Mail } from "lucide-react";
 
 const Index = () => {
@@ -42,22 +43,22 @@ const Index = () => {
       <Header showFilters={showFilters} onToggleFilters={() => setShowFilters(!showFilters)} />
       
       {/* Hero Section */}
-      <section className="relative h-[60vh] overflow-hidden">
+      <section className="relative h-[70vh] overflow-hidden bg-gradient-luxury">
         <img
           src={heroImage}
-          alt="Fresh healthy groceries"
-          className="w-full h-full object-cover"
+          alt="Premium imported luxury goods"
+          className="w-full h-full object-cover opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-luxury-navy/90 via-luxury-navy/70 to-transparent" />
         <div className="absolute inset-0 flex items-center">
           <div className="container mx-auto px-4">
-            <div className="max-w-2xl space-y-6">
-              <h1 className="text-5xl font-bold text-foreground">
-                Welcome back, {userPreferences.name}!
+            <div className="max-w-3xl space-y-8">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-luxury-gold to-luxury-gold-light bg-clip-text text-transparent leading-tight">
+                Welcome to Importrade, {userPreferences.name}!
               </h1>
-              <p className="text-xl text-muted-foreground">
-                Discover curated products perfect for your dietary needs. 
-                Fresh finds, delivered to your door.
+              <p className="text-2xl text-luxury-cream font-light leading-relaxed">
+                Discover premium imported treasures curated for the discerning palate. 
+                Luxury goods from around the world, delivered to your doorstep.
               </p>
               <div className="flex flex-wrap gap-2">
                 {userPreferences.glutenFree && (
@@ -143,6 +144,9 @@ const Index = () => {
               )}
             </section>
 
+            {/* Advertising Banner */}
+            <AdvertisingBanner variant="featured" className="my-12" />
+
             {/* Recipes Section */}
             <section id="recipes" className="mt-16">
               <div className="flex items-center justify-between mb-6">
@@ -168,7 +172,7 @@ const Index = () => {
                 <CardContent className="p-8">
                   <div className="max-w-2xl mx-auto text-center space-y-6">
                     <h2 className="text-3xl font-bold text-foreground">
-                      Partner with FreshFinds
+                      Partner with Importrade
                     </h2>
                     <p className="text-lg text-muted-foreground">
                       Reach health-conscious shoppers looking for quality products. 
@@ -185,7 +189,7 @@ const Index = () => {
                       />
                     </div>
                     
-                    <Button variant="fresh" size="lg" className="gap-2">
+                    <Button variant="luxury" size="lg" className="gap-2">
                       <Mail className="h-4 w-4" />
                       Get in Touch
                     </Button>

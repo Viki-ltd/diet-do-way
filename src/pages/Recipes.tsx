@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
+import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import RecipeCard from "@/components/RecipeCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,11 +41,13 @@ export default function Recipes() {
               Recipes so good, they'll make you question your life choices (in a good way).
             </p>
           </div>
-          <Button className="bg-trade-blue hover:bg-trade-blue/90">
+          <Button variant="luxury">
             <Plus className="h-4 w-4 mr-2" />
             Submit Recipe
           </Button>
         </div>
+
+        <AdvertisingBanner variant="newsletter" className="mb-6" />
 
         <div className="mb-6">
           <div className="relative max-w-md">

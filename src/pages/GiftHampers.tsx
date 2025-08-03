@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
+import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -114,10 +115,12 @@ const GiftHampers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-elegant">
+    <div className="min-h-screen bg-gradient-luxury-subtle">
       <Header showFilters={false} onToggleFilters={() => {}} />
       
       <div className="container mx-auto px-4 py-8">
+        <AdvertisingBanner variant="premium" className="mb-8" />
+        
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Gift className="w-8 h-8 text-luxury-gold" />

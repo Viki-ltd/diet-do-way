@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
+import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,8 @@ const LocalBusiness = () => {
       </section>
 
       <div className="container mx-auto px-4 py-8">
+        <AdvertisingBanner variant="featured" className="mb-8" />
+        
         {/* Search and Filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="flex-1">
@@ -58,7 +61,7 @@ const LocalBusiness = () => {
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
+              <Button variant="luxury" className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />
                 Partner With Us
               </Button>
@@ -73,7 +76,7 @@ const LocalBusiness = () => {
                 <Input placeholder="Phone Number" />
                 <Input placeholder="Address" />
                 <Input placeholder="Website (optional)" />
-                <Button className="w-full">Submit Application</Button>
+                <Button variant="luxury" className="w-full">Submit Application</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -127,7 +130,7 @@ const LocalBusiness = () => {
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <Button size="sm" className="flex-1">
+                    <Button size="sm" variant="luxury" className="flex-1">
                       Visit
                     </Button>
                     {business.website && (

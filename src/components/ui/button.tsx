@@ -20,6 +20,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         fresh: "bg-gradient-to-r from-fresh-green to-fresh-green/90 text-white hover:from-fresh-green/90 hover:to-fresh-green/80 shadow-card hover:shadow-lg hover:-translate-y-0.5",
         warm: "bg-warm-orange text-foreground hover:bg-warm-orange/90 shadow-soft",
+        luxury: "bg-gradient-to-r from-luxury-gold to-luxury-gold-light text-luxury-navy hover:from-luxury-gold-light hover:to-luxury-gold shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-semibold",
+        premium: "bg-luxury-navy text-luxury-gold border border-luxury-gold hover:bg-luxury-gold hover:text-luxury-navy shadow-lg hover:shadow-xl transition-all duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",
