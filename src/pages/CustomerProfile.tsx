@@ -9,11 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
-import { FilterSidebar, Filters } from "@/components/FilterSidebar";
 import { Heart, Package, Clock, Settings, Bell, CreditCard, MapPin, Phone, Mail } from "lucide-react";
+import { AppSidebar } from "@/components/AppSidebar";
+import PageHeader from "@/components/PageHeader";
 
 const CustomerProfile = () => {
-  const [filters, setFilters] = useState<Filters>({ categories: [], dietaryTags: [] });
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -33,10 +33,20 @@ const CustomerProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage/20 via-background to-earth/10">
-      <div className="container mx-auto px-4 py-8">
-        <Breadcrumb />
-        <AdvertisingBanner />
+    <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
+      <div className="flex">
+        <AppSidebar />
+        <div className="flex-1">
+          <PageHeader
+            title="My Profile"
+            description="Manage your account settings, orders, and preferences"
+            imageUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200"
+            badge="Member Account"
+          />
+          
+          <div className="container mx-auto px-4 py-6">
+            <Breadcrumb />
+            <AdvertisingBanner />
         
         {/* Profile Header */}
         <Card className="mb-8 border-earth/20 bg-white/90 backdrop-blur">
@@ -216,6 +226,8 @@ const CustomerProfile = () => {
             </div>
           </TabsContent>
         </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );

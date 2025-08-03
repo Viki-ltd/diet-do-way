@@ -45,7 +45,7 @@ export const OnboardingForm = ({ onComplete }: OnboardingFormProps) => {
               <Leaf className="h-8 w-8 text-fresh-green" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome to FreshFinds!</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome to ImporTrade!</CardTitle>
           <p className="text-muted-foreground">
             Tell us about your dietary preferences to discover products perfect for you.
           </p>

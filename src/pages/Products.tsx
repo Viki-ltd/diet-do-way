@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import ProductCard from "@/components/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { mockProducts } from "@/data/mockData";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import PageHeader from "@/components/PageHeader";
+import CartDrawer from "@/components/CartDrawer";
+import SearchBar from "@/components/SearchBar";
 import {
   Pagination,
   PaginationContent,
@@ -45,39 +49,49 @@ export default function Products() {
   const currentProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header showFilters={showFilters} onToggleFilters={() => setShowFilters(!showFilters)} />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">Global Trade Products</h1>
-          <p className="text-muted-foreground text-lg">
-            Discover exotic ingredients that'll make your taste buds apply for dual citizenship.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
+      <div className="flex">
+        <AppSidebar />
+        <div className="flex-1">
+          <PageHeader
+            title="Premium Products"
+            description="Discover carefully curated ingredients and specialty foods from around the world"
+            imageUrl="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200"
+            badge="Global Marketplace"
+            stats={[
+              { label: "Products", value: mockProducts.length.toString() },
+              { label: "Countries", value: "25+" },
+              { label: "Avg Rating", value: "4.8" }
+            ]}
+          />
+          
+          <div className="container mx-auto px-4 py-6">
+            <Breadcrumb />
 
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className={`${showFilters ? 'block' : 'hidden'} md:block w-80 shrink-0`}>
-            <FilterSidebar filters={filters} onFiltersChange={setFilters} />
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Advertising Banner */}
-            <AdvertisingBanner variant="premium" className="mb-6" />
+            <AdvertisingBanner />
             
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search for that one ingredient you can't pronounce..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-nature bg-clip-text text-transparent">
+                Products ({filteredProducts.length})
+              </h2>
+              <div className="flex items-center gap-4">
+                <SearchBar 
+                  placeholder="Search products..."
+                  onSearch={setSearchQuery}
+                  className="w-64"
                 />
+                <CartDrawer />
               </div>
             </div>
+
+            <div className="flex gap-8">
+              {/* Sidebar */}
+              <div className={`${showFilters ? 'block' : 'hidden'} md:block w-80 shrink-0`}>
+                <FilterSidebar filters={filters} onFiltersChange={setFilters} />
+              </div>
+
+              {/* Main Content */}
+              <div className="flex-1">
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {currentProducts.map((product) => (
@@ -121,6 +135,8 @@ export default function Products() {
                 </PaginationContent>
               </Pagination>
             )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -37,8 +37,8 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
       <CardHeader className="p-0">
         <div className="relative overflow-hidden">
           <img 
-            src={`https://images.unsplash.com/${recipe.image}?w=400&h=300&fit=crop&auto=format`}
-            alt={recipe.title} 
+            src={recipe.image}
+            alt={recipe.title}
             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
