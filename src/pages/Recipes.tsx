@@ -36,9 +36,9 @@ export default function Recipes() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
-      <div className="flex">
+      <div className="flex w-full">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <PageHeader
             title="Culinary Inspiration"
             description="Discover delicious recipes using our premium ingredients from around the world"
@@ -51,7 +51,7 @@ export default function Recipes() {
             ]}
           />
           
-          <div className="container mx-auto px-4 py-6">
+          <div className="w-full px-6 md:px-12 py-8">
             <Breadcrumb />
             
             <AdvertisingBanner />
@@ -67,8 +67,8 @@ export default function Recipes() {
                   className="w-64"
                 />
                 <Button 
-                  onClick={() => navigate('/submit-recipe')}
-                  className="bg-gradient-nature text-natural-beige"
+                  onClick={() => navigate('/recipes/submit')}
+                  variant="fresh"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Submit Recipe

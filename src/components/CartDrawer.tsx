@@ -1,70 +1,23 @@
-import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: string;
-  quantity: number;
-  image: string;
-}
+import { useCart } from "@/hooks/useCart";
 
 const CartDrawer = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Himalayan Pink Salt",
-      price: "$12.99",
-      quantity: 2,
-      image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=100"
-    },
-    {
-      id: "2",
-      name: "Truffle Oil",
-      price: "$28.50",
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=100"
-    }
-  ]);
-  
-  const { toast } = useToast();
+  const { cartItems, updateQuantity, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart();
 
-  const updateQuantity = (id: string, change: number) => {
-    setCartItems(items => 
-      items.map(item => 
-        item.id === id 
-          ? { ...item, quantity: Math.max(0, item.quantity + change) }
-          : item
-      ).filter(item => item.quantity > 0)
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-    toast({ title: "Item removed from cart" });
-  };
-
-  const getTotalItems = () => cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const getTotalPrice = () => {
-    const total = cartItems.reduce((sum, item) => {
-      const price = parseFloat(item.price.replace('$', ''));
-      return sum + (price * item.quantity);
-    }, 0);
-    return `$${total.toFixed(2)}`;
-  };
+  const totalItems = getTotalItems();
+  const totalPrice = getTotalPrice();
 
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="relative">
           <ShoppingCart className="h-4 w-4" />
-          {getTotalItems() > 0 && (
-            <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-warm-orange text-natural-beige">
-              {getTotalItems()}
+          {totalItems > 0 && (
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-warm-orange text-white">
+              {totalItems}
             </Badge>
           )}
         </Button>
@@ -72,7 +25,7 @@ const CartDrawer = () => {
       
       <SheetContent className="w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Shopping Cart ({getTotalItems()} items)</SheetTitle>
+          <SheetTitle>Shopping Cart ({totalItems} items)</SheetTitle>
         </SheetHeader>
         
         <div className="mt-6 space-y-4">
@@ -99,7 +52,7 @@ const CartDrawer = () => {
                       size="icon" 
                       variant="outline" 
                       className="h-8 w-8"
-                      onClick={() => updateQuantity(item.id, -1)}
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
                     >
                       <Minus className="h-3 w-3" />
                     </Button>
@@ -108,7 +61,7 @@ const CartDrawer = () => {
                       size="icon" 
                       variant="outline" 
                       className="h-8 w-8"
-                      onClick={() => updateQuantity(item.id, 1)}
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
                     >
                       <Plus className="h-3 w-3" />
                     </Button>
@@ -116,7 +69,7 @@ const CartDrawer = () => {
                       size="icon" 
                       variant="ghost" 
                       className="h-8 w-8 text-destructive"
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeFromCart(item.id)}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -126,11 +79,16 @@ const CartDrawer = () => {
               
               <div className="border-t pt-4 mt-6">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="font-semibold">Total: {getTotalPrice()}</span>
+                  <span className="font-semibold">Total: ${totalPrice.toFixed(2)}</span>
                 </div>
-                <Button className="w-full bg-gradient-nature text-natural-beige">
-                  Proceed to Checkout
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1" onClick={clearCart}>
+                    Clear Cart
+                  </Button>
+                  <Button variant="fresh" className="flex-1">
+                    Checkout
+                  </Button>
+                </div>
               </div>
             </>
           )}

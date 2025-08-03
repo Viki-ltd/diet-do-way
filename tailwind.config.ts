@@ -52,11 +52,23 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Nature theme colors
+				'fresh-green': 'hsl(var(--fresh-green))',
+				'fresh-green-light': 'hsl(var(--fresh-green-light))',
+				'warm-orange': 'hsl(var(--warm-orange))',
+				'cream': 'hsl(var(--cream))',
+				'earth-brown': 'hsl(var(--earth-brown))',
+				'sage-green': 'hsl(var(--sage-green))',
+				'sage': 'hsl(var(--sage))',
+				'natural-beige': 'hsl(var(--natural-beige))',
+				'forest-green': 'hsl(var(--forest-green))',
+				'sunshine-yellow': 'hsl(var(--sunshine-yellow))',
+				// Trade theme colors
 				'trade-blue': 'hsl(var(--trade-blue))',
 				'trade-blue-light': 'hsl(var(--trade-blue-light))',
 				'trade-gold': 'hsl(var(--trade-gold))',
 				'trade-green': 'hsl(var(--trade-green))',
-				'cream': 'hsl(var(--cream))',
+				// Luxury theme colors
 				'luxury-gold': 'hsl(var(--luxury-gold))',
 				'luxury-gold-light': 'hsl(var(--luxury-gold-light))',
 				'luxury-navy': 'hsl(var(--luxury-navy))',

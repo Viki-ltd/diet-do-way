@@ -50,9 +50,9 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
-      <div className="flex">
+      <div className="flex w-full">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <PageHeader
             title="Premium Products"
             description="Discover carefully curated ingredients and specialty foods from around the world"
@@ -65,7 +65,7 @@ export default function Products() {
             ]}
           />
           
-          <div className="container mx-auto px-4 py-6">
+          <div className="w-full px-6 md:px-12 py-8">
             <Breadcrumb />
 
             <AdvertisingBanner />

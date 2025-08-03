@@ -10,24 +10,24 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, description, imageUrl, badge, stats }: PageHeaderProps) => {
   return (
-    <div className="relative h-64 overflow-hidden bg-gradient-to-r from-fresh-green to-sage">
+    <div className="relative h-80 w-full overflow-hidden bg-gradient-to-r from-fresh-green to-sage-green">
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-30"
+        className="absolute inset-0 bg-cover bg-center opacity-40"
         style={{ backgroundImage: `url(${imageUrl})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-fresh-green/90 to-sage/90" />
+      <div className="absolute inset-0 bg-gradient-to-r from-fresh-green/80 to-sage-green/80" />
       
-      <div className="relative container mx-auto px-4 h-full flex items-center">
-        <div className="text-center w-full space-y-4">
+      <div className="relative w-full px-6 md:px-12 h-full flex items-center">
+        <div className="text-center w-full space-y-6">
           {badge && (
-            <Badge className="bg-warm-orange text-natural-beige font-semibold px-4 py-2">
+            <Badge className="bg-warm-orange text-white font-semibold px-6 py-2 text-sm">
               {badge}
             </Badge>
           )}
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
             {title}
           </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed">
             {description}
           </p>
           
