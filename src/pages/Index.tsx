@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { OnboardingForm, DietaryPreferences } from "@/components/OnboardingForm";
 import ProductCard from "@/components/ProductCard";
 import RecipeCard from "@/components/RecipeCard";
@@ -15,7 +15,6 @@ import { Search, Star, Mail } from "lucide-react";
 
 const Index = () => {
   const [userPreferences, setUserPreferences] = useState<DietaryPreferences | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>({ categories: [], dietaryTags: [] });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -40,9 +39,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header showFilters={showFilters} onToggleFilters={() => setShowFilters(!showFilters)} />
-      
-      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-8">
+        <Breadcrumb />
+        <AdvertisingBanner />
+        
+        {/* Hero Section */}
       <section className="relative h-[70vh] overflow-hidden bg-gradient-luxury">
         <img
           src={heroImage}
@@ -80,21 +81,21 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex gap-6">
-          {/* Desktop Filter Sidebar */}
-          <div className="hidden md:block w-80 flex-shrink-0">
-            <FilterSidebar
-              filters={filters}
-              onFiltersChange={setFilters}
-              className="sticky top-24"
-            />
-          </div>
+        <div className="space-y-8">
+          <div className="flex gap-6">
+            {/* Desktop Filter Sidebar */}
+            <div className="hidden md:block w-80 flex-shrink-0">
+              <FilterSidebar
+                filters={filters}
+                onFiltersChange={setFilters}
+                className="sticky top-24"
+              />
+            </div>
 
-          {/* Main Content */}
-          <div className="flex-1 space-y-8">
+            {/* Main Content */}
+            <div className="flex-1 space-y-8">
             {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -106,17 +107,7 @@ const Index = () => {
               />
             </div>
 
-            {/* Mobile Filter Toggle */}
-            {showFilters && (
-              <div className="md:hidden">
-                <FilterSidebar
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                />
-              </div>
-            )}
-
-            {/* Products Section */}
+              {/* Products Section */}
             <section id="products">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold text-foreground">
@@ -197,6 +188,7 @@ const Index = () => {
                 </CardContent>
               </Card>
             </section>
+            </div>
           </div>
         </div>
       </div>

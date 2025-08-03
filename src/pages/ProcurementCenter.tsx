@@ -7,13 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Header } from "@/components/Header";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { FilterSidebar, Filters } from "@/components/FilterSidebar";
 import { Calendar, Package, Plus, Truck, Clock, ShoppingCart } from "lucide-react";
 
 const ProcurementCenter = () => {
-  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>({ categories: [], dietaryTags: [] });
   const [orderType, setOrderType] = useState("weekly");
 
@@ -32,16 +31,8 @@ const ProcurementCenter = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sage/20 via-background to-earth/10">
-      <Header showFilters={showFilters} onToggleFilters={() => setShowFilters(!showFilters)} />
-      {showFilters && (
-        <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowFilters(false)}>
-          <div className="fixed left-0 top-0 h-full w-80 bg-white z-50" onClick={(e) => e.stopPropagation()}>
-            <FilterSidebar filters={filters} onFiltersChange={setFilters} className="h-full border-0" />
-          </div>
-        </div>
-      )}
-      
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumb />
         <AdvertisingBanner />
         
         <div className="mb-8">
