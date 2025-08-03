@@ -19,8 +19,7 @@ const LocalBusiness = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header showFilters={false} onToggleFilters={() => {}} />
+    <div className="min-h-screen bg-gradient-to-br from-sage/5 via-background to-earth/5">
       
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 to-secondary/10 py-16">

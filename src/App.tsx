@@ -18,6 +18,7 @@ import SubmitRecipe from "./pages/SubmitRecipe";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import GiftHampers from "./pages/GiftHampers";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +61,7 @@ const App = () => (
                   <Route path="/gift-hampers" element={<GiftHampers />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/customer-profile" element={<CustomerProfile />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
