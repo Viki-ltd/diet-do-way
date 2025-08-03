@@ -36,24 +36,21 @@ All colors MUST be HSL.
     --input: 32 20% 88%;
     --ring: 142 76% 36%;
 
-    /* ImporTrade theme colors */
-    --trade-blue: 210 100% 50%;
-    --trade-blue-light: 210 60% 85%;
-    --trade-gold: 45 90% 60%;
-    --trade-green: 142 76% 36%;
-    --cream: 32 50% 95%;
+    /* Nature-based ImporTrade theme */
+    --fresh-green: 142 70% 49%;
+    --fresh-green-light: 142 70% 95%;
+    --warm-orange: 30 100% 50%;
+    --cream: 45 29% 97%;
+    --earth-brown: 25 30% 35%;
+    --sage-green: 84 20% 50%;
+    --natural-beige: 40 20% 90%;
+    --forest-green: 120 50% 25%;
+    --sunshine-yellow: 48 100% 67%;
     
-    /* Luxury Theme Colors */
-    --luxury-gold: 43 96% 56%;
-    --luxury-gold-light: 43 74% 66%;
-    --luxury-navy: 221 39% 11%;
-    --luxury-cream: 43 40% 94%;
-    --luxury-dark: 222 84% 5%;
-    
-    /* Custom Gradients */
-    --gradient-trade: linear-gradient(135deg, hsl(var(--trade-blue)), hsl(var(--trade-gold)));
-    --gradient-luxury: linear-gradient(135deg, hsl(var(--luxury-gold)), hsl(var(--luxury-navy)));
-    --gradient-luxury-subtle: linear-gradient(180deg, hsl(var(--luxury-cream)), hsl(var(--background)));
+    /* Nature Gradients */
+    --gradient-nature: linear-gradient(135deg, hsl(var(--fresh-green)), hsl(var(--sage-green)));
+    --gradient-earth: linear-gradient(180deg, hsl(var(--natural-beige)), hsl(var(--cream)));
+    --gradient-fresh: linear-gradient(135deg, hsl(var(--fresh-green)), hsl(var(--sunshine-yellow)));
     
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(var(--trade-blue) / 0.1);
