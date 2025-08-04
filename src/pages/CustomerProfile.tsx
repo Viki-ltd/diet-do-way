@@ -33,10 +33,10 @@ const CustomerProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
-      <div className="flex">
+    <div className="min-h-screen bg-background">
+      <div className="flex w-full">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <PageHeader
             title="My Profile"
             description="Manage your account settings, orders, and preferences"

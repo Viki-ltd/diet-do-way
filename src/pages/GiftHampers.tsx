@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
+import PageHeader from "@/components/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -115,11 +115,16 @@ const GiftHampers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-luxury-subtle">
-      <Header showFilters={false} onToggleFilters={() => {}} />
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        title="Gift Hampers"
+        description="Create bespoke gift hampers with our finest imported delicacies"
+        imageUrl="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200"
+        badge="Premium Service"
+      />
       
       <div className="container mx-auto px-4 py-8">
-        <AdvertisingBanner variant="premium" className="mb-8" />
+        <AdvertisingBanner className="mb-8" />
         
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">

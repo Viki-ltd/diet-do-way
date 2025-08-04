@@ -11,6 +11,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { FilterSidebar, Filters } from "@/components/FilterSidebar";
 import { Calendar, Package, Plus, Truck, Clock, ShoppingCart } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 
 const ProcurementCenter = () => {
   const [filters, setFilters] = useState<Filters>({ categories: [], dietaryTags: [] });
@@ -30,15 +31,17 @@ const ProcurementCenter = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage/20 via-background to-earth/10">
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        title="Procurement Center"
+        description="Streamline your restaurant's bulk ordering and supply chain management"
+        imageUrl="https://images.unsplash.com/photo-1586999134784-45600d9b7c80?w=1200"
+        badge="Business Solutions"
+      />
+      
       <div className="container mx-auto px-4 py-8">
         <Breadcrumb />
         <AdvertisingBanner />
-        
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-earth mb-2">Procurement Center</h1>
-          <p className="text-lg text-sage">Streamline your restaurant's bulk ordering and supply chain management</p>
-        </div>
 
         <Tabs defaultValue="place-order" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur">

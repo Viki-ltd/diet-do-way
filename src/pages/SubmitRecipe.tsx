@@ -11,6 +11,7 @@ import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { FilterSidebar, Filters } from "@/components/FilterSidebar";
 import { Plus, Minus, Upload, Clock, Users, ChefHat } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import PageHeader from "@/components/PageHeader";
 
 const SubmitRecipe = () => {
   const [filters, setFilters] = useState<Filters>({ categories: [], dietaryTags: [] });
@@ -73,15 +74,17 @@ const SubmitRecipe = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage/20 via-background to-earth/10">
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        title="Submit Recipe"
+        description="Share your culinary creations with the ImporTrade community"
+        imageUrl="https://images.unsplash.com/photo-1556909114-4ad7be2c1c94?w=1200"
+        badge="Community Contribution"
+      />
+      
       <div className="container mx-auto px-4 py-8">
         <Breadcrumb />
         <AdvertisingBanner />
-        
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-earth mb-2">Submit Your Recipe</h1>
-          <p className="text-lg text-sage">Share your culinary creations with the ImporTrade community</p>
-        </div>
 
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
           <div className="grid gap-6">
