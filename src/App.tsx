@@ -20,6 +20,7 @@ import SubmitRecipe from "./pages/SubmitRecipe";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import GiftHampers from "./pages/GiftHampers";
+import PreOrder from "./pages/PreOrder";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -35,7 +36,7 @@ const App = () => (
           <div className="min-h-screen flex w-full bg-background">
             <AppSidebar />
             
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col w-0 min-w-0">
               {/* Global Header with Sidebar Trigger */}
               <header className="h-12 flex items-center border-b border-earth/20 bg-white/90 backdrop-blur px-4">
                 <SidebarTrigger className="mr-2" />
@@ -62,6 +63,7 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/gift-hampers" element={<GiftHampers />} />
+                  <Route path="/pre-order" element={<PreOrder />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/customer-profile" element={<CustomerProfile />} />
                   <Route path="/settings" element={<Settings />} />

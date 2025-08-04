@@ -36,6 +36,7 @@ const mainItems = [
   { title: "Recipes", url: "/recipes", icon: ChefHat },
   { title: "Local Partners", url: "/local-business", icon: Building2 },
   { title: "Gift Hampers", url: "/gift-hampers", icon: Gift },
+  { title: "Pre-Order (30% Off)", url: "/pre-order", icon: Calendar },
   { title: "Affiliate Program", url: "/affiliate", icon: Users },
 ];
 
@@ -63,7 +64,7 @@ export function AppSidebar() {
   const getNavCls = ({ isActive: active }: { isActive: boolean }) =>
     active 
       ? "bg-sage/10 text-sage font-medium border-r-2 border-sage" 
-      : "hover:bg-earth/5 text-earth";
+      : "hover:bg-sage/5 text-sage";
 
   return (
     <Sidebar className="border-r border-earth/20 bg-white/90 backdrop-blur">
@@ -75,13 +76,13 @@ export function AppSidebar() {
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-sage to-earth flex items-center justify-center">
               <span className="text-white font-bold text-sm">IT</span>
             </div>
-            <span className="font-bold text-lg text-earth">ImporTrade</span>
+            <span className="font-bold text-lg text-sage">ImporTrade</span>
           </div>
         </div>
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-earth font-medium">
+          <SidebarGroupLabel className="text-sage font-medium">
             Marketplace
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -106,7 +107,7 @@ export function AppSidebar() {
 
         {/* Business Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-earth font-medium">
+          <SidebarGroupLabel className="text-sage font-medium">
             Business
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -127,7 +128,7 @@ export function AppSidebar() {
 
         {/* User Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-earth font-medium">
+          <SidebarGroupLabel className="text-sage font-medium">
             Account
           </SidebarGroupLabel>
           <SidebarGroupContent>

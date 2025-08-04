@@ -1,52 +1,69 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
+import PageHeader from "@/components/PageHeader";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { MapPin, Phone, Globe, Plus } from "lucide-react";
+import { MapPin, Phone, Globe, Plus, Utensils, ChefHat } from "lucide-react";
 import { mockBusinesses } from "@/data/businessData";
 
 const LocalBusiness = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("restaurants");
 
-  const filteredBusinesses = mockBusinesses.filter(business =>
-    business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    business.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    business.location.toLowerCase().includes(searchTerm.toLowerCase())
+  const restaurants = mockBusinesses.filter(business => 
+    business.type.toLowerCase().includes('restaurant') || 
+    business.type.toLowerCase().includes('cafe') ||
+    business.type.toLowerCase().includes('bistro')
   );
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-sage/5 via-background to-earth/5">
-      
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/10 to-secondary/10 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Local Trade Partners</h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Discover amazing restaurants and cafes using ImporTrade products in your area
-          </p>
-          <div className="flex justify-center gap-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">150+</div>
-              <div className="text-sm text-muted-foreground">Partner Businesses</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">25</div>
-              <div className="text-sm text-muted-foreground">Cities</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">4.9★</div>
-              <div className="text-sm text-muted-foreground">Average Rating</div>
-            </div>
-          </div>
-        </div>
-      </section>
+  const mealProviders = mockBusinesses.filter(business => 
+    business.type.toLowerCase().includes('meal') || 
+    business.type.toLowerCase().includes('catering') ||
+    business.type.toLowerCase().includes('delivery')
+  );
 
-      <div className="container mx-auto px-4 py-8">
-        <AdvertisingBanner variant="featured" className="mb-8" />
+  const getFilteredBusinesses = () => {
+    const businesses = activeTab === "restaurants" ? restaurants : mealProviders;
+    return businesses.filter(business =>
+      business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      business.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      business.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <PageHeader 
+        title="Local Trade Partners"
+        description="Discover amazing restaurants and meal plan providers using ImporTrade products in your area"
+        imageUrl="/api/placeholder/1200/400"
+        badge="Partner Network"
+        stats={[
+          { label: "Partner Businesses", value: "150+" },
+          { label: "Cities", value: "25" },
+          { label: "Average Rating", value: "4.9★" }
+        ]}
+      />
+      
+      <AdvertisingBanner variant="featured" className="mx-6 my-8" />
+
+      <div className="px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="restaurants" className="flex items-center gap-2">
+              <Utensils className="w-4 h-4" />
+              Restaurants & Cafes
+            </TabsTrigger>
+            <TabsTrigger value="meal-providers" className="flex items-center gap-2">
+              <ChefHat className="w-4 h-4" />
+              Meal Plan Providers
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
         
         {/* Search and Filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -60,7 +77,7 @@ const LocalBusiness = () => {
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="luxury" className="flex items-center gap-2">
+              <Button className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />
                 Partner With Us
               </Button>
@@ -75,7 +92,7 @@ const LocalBusiness = () => {
                 <Input placeholder="Phone Number" />
                 <Input placeholder="Address" />
                 <Input placeholder="Website (optional)" />
-                <Button variant="luxury" className="w-full">Submit Application</Button>
+                <Button className="w-full">Submit Application</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -83,7 +100,7 @@ const LocalBusiness = () => {
 
         {/* Business Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBusinesses.map((business) => (
+          {getFilteredBusinesses().map((business) => (
             <Card key={business.id} className="hover:shadow-lg transition-shadow">
               <div className="relative">
                 <img
@@ -91,7 +108,7 @@ const LocalBusiness = () => {
                   alt={business.name}
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
-                <Badge className="absolute top-2 right-2 bg-primary">
+                <Badge className="absolute top-2 right-2 bg-sage text-white">
                   {business.type}
                 </Badge>
               </div>
@@ -129,7 +146,7 @@ const LocalBusiness = () => {
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <Button size="sm" variant="luxury" className="flex-1">
+                    <Button size="sm" className="flex-1">
                       Visit
                     </Button>
                     {business.website && (
@@ -144,7 +161,7 @@ const LocalBusiness = () => {
           ))}
         </div>
 
-        {filteredBusinesses.length === 0 && (
+        {getFilteredBusinesses().length === 0 && (
           <div className="text-center py-12">
             <h3 className="text-lg font-semibold mb-2">No businesses found</h3>
             <p className="text-muted-foreground">Try adjusting your search terms</p>
