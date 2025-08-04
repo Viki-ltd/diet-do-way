@@ -25,7 +25,9 @@ import {
   FileText,
   Settings,
   LogIn,
-  Utensils
+  Utensils,
+  Users,
+  Calendar
 } from "lucide-react";
 
 const mainItems = [
@@ -34,16 +36,17 @@ const mainItems = [
   { title: "Recipes", url: "/recipes", icon: ChefHat },
   { title: "Local Partners", url: "/local-business", icon: Building2 },
   { title: "Gift Hampers", url: "/gift-hampers", icon: Gift },
+  { title: "Affiliate Program", url: "/affiliate", icon: Users },
 ];
 
 const businessItems = [
   { title: "Procurement Center", url: "/procurement", icon: Store },
   { title: "Advertise", url: "/advertise", icon: Megaphone },
-  { title: "Dashboard", url: "/dashboard", icon: BarChart3 },
 ];
 
 const userItems = [
   { title: "Profile", url: "/customer-profile", icon: User },
+  { title: "Monthly Subscriptions", url: "/dashboard", icon: Calendar },
   { title: "Submit Recipe", url: "/recipes/submit", icon: FileText },
   { title: "Settings", url: "/settings", icon: Settings },
 ];

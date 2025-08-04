@@ -5,12 +5,14 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
+import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Recipes from "./pages/Recipes";
 import RecipeDetail from "./pages/RecipeDetail";
 import LocalBusiness from "./pages/LocalBusiness";
 import Advertise from "./pages/Advertise";
+import Affiliate from "./pages/Affiliate";
 import Profile from "./pages/Profile";
 import CustomerProfile from "./pages/CustomerProfile";
 import ProcurementCenter from "./pages/ProcurementCenter";
@@ -30,7 +32,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <SidebarProvider>
-          <div className="min-h-screen flex w-full bg-gradient-to-br from-sage/5 via-background to-earth/5">
+          <div className="min-h-screen flex w-full bg-background">
             <AppSidebar />
             
             <div className="flex-1 flex flex-col">
@@ -55,6 +57,7 @@ const App = () => (
                   <Route path="/recipes/submit" element={<SubmitRecipe />} />
                   <Route path="/local-business" element={<LocalBusiness />} />
                   <Route path="/advertise" element={<Advertise />} />
+                  <Route path="/affiliate" element={<Affiliate />} />
                   <Route path="/procurement" element={<ProcurementCenter />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/dashboard" element={<Dashboard />} />
@@ -64,6 +67,7 @@ const App = () => (
                   <Route path="/settings" element={<Settings />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <Footer />
               </main>
             </div>
           </div>
