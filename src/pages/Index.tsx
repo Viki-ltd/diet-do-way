@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Breadcrumb } from "@/components/Breadcrumb";
 import { OnboardingForm, DietaryPreferences } from "@/components/OnboardingForm";
+import { AdvertisingBanner } from "@/components/AdvertisingBanner";
 import ProductCard from "@/components/ProductCard";
 import RecipeCard from "@/components/RecipeCard";
 import { FilterSidebar, Filters } from "@/components/FilterSidebar";
@@ -8,15 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Filter, Search, Star, Mail } from "lucide-react";
 import { mockProducts, mockRecipes } from "@/data/mockData";
-import heroImage from "@/assets/hero-importrade.jpg";
-import { AdvertisingBanner } from "@/components/AdvertisingBanner";
-import { Search, Star, Mail } from "lucide-react";
 
 const Index = () => {
   const [userPreferences, setUserPreferences] = useState<DietaryPreferences | null>(null);
   const [filters, setFilters] = useState<Filters>({ categories: [], dietaryTags: [] });
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   // If user hasn't completed onboarding, show the form
   if (!userPreferences) {
@@ -38,89 +37,96 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
-      <div className="w-full">
-        
-        {/* Hero Section */}
-      <section className="relative h-[80vh] overflow-hidden bg-gradient-to-r from-fresh-green to-sage-green">
-        <img
-          src={heroImage}
-          alt="Premium imported goods from nature"
-          className="w-full h-full object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-fresh-green/80 via-fresh-green/60 to-sage-green/80" />
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full px-6 md:px-12">
-            <div className="max-w-4xl space-y-8">
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-                Welcome to ImporTrade, {userPreferences.name}!
-              </h1>
-              <p className="text-xl md:text-2xl text-white/95 font-light leading-relaxed max-w-3xl">
-                Discover premium imported treasures from nature's finest sources. 
-                Sustainable, organic goods from around the world, delivered to your doorstep.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {userPreferences.glutenFree && (
-                  <span className="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium border border-white/30">
-                    Gluten-Free
-                  </span>
-                )}
-                {userPreferences.dairyFree && (
-                  <span className="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium border border-white/30">
-                    Dairy-Free
-                  </span>
-                )}
-                {userPreferences.lowCarb && (
-                  <span className="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium border border-white/30">
-                    Low-Carb
-                  </span>
-                )}
-              </div>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="bg-background py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl font-bold mb-4">Welcome to ImporTrade, {userPreferences.name}!</h1>
+          <p className="text-xl text-muted-foreground mb-8">
+            Discover sustainable, premium ingredients and connect with local businesses for a greener, healthier lifestyle
+          </p>
+          <div className="flex justify-center gap-4">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">500+</div>
+              <div className="text-sm text-muted-foreground">Products</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">150+</div>
+              <div className="text-sm text-muted-foreground">Partners</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">95%</div>
+              <div className="text-sm text-muted-foreground">Satisfaction</div>
             </div>
           </div>
-        </div>
-        </section>
-
-        <div className="w-full px-6 md:px-12 py-12">
-          <Breadcrumb />
-          <AdvertisingBanner className="mb-8" />
           
-          <div className="flex gap-8">
-            {/* Desktop Filter Sidebar */}
-            <div className="hidden md:block w-80 flex-shrink-0">
-              <FilterSidebar
+          {/* User Preferences Display */}
+          <div className="flex justify-center gap-3 mt-6">
+            {userPreferences.glutenFree && (
+              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20">
+                Gluten-Free
+              </span>
+            )}
+            {userPreferences.dairyFree && (
+              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20">
+                Dairy-Free
+              </span>
+            )}
+            {userPreferences.lowCarb && (
+              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20">
+                Low-Carb
+              </span>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8">
+        <AdvertisingBanner className="mb-8" />
+        
+        {/* Search and Filter */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-full"
+            />
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+        </div>
+
+        <div className="flex gap-8">
+          {showFilters && (
+            <div className="w-72 flex-shrink-0">
+              <FilterSidebar 
                 filters={filters}
                 onFiltersChange={setFilters}
-                className="sticky top-24"
+                className="sticky top-4"
               />
             </div>
-
-            {/* Main Content */}
-            <div className="flex-1 space-y-12 min-w-0">
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-              {/* Products Section */}
-            <section id="products">
+          )}
+          
+          <div className="flex-1">
+            {/* Featured Products */}
+            <section className="mb-12">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-foreground">
-                  Curated for You
-                </h2>
+                <h2 className="text-3xl font-bold">Curated for You</h2>
                 <span className="text-muted-foreground">
                   {filteredProducts.length} products
                 </span>
               </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProducts.slice(0, 6).map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -136,60 +142,42 @@ const Index = () => {
               )}
             </section>
 
-            {/* Advertising Banner */}
-            <AdvertisingBanner variant="featured" className="my-12" />
-
-            {/* Recipes Section */}
-            <section id="recipes" className="mt-16">
+            {/* Featured Recipes */}
+            <section className="mb-12">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-foreground">
-                  Recipe Inspiration
-                </h2>
-                <div className="flex items-center gap-1 text-warm-orange">
+                <h2 className="text-3xl font-bold">Recipe Inspiration</h2>
+                <div className="flex items-center gap-1 text-primary">
                   <Star className="h-4 w-4 fill-current" />
                   <span className="text-sm font-medium">Editor's Choice</span>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mockRecipes.map((recipe) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {mockRecipes.slice(0, 6).map((recipe) => (
                   <RecipeCard key={recipe.id} recipe={recipe} />
                 ))}
               </div>
             </section>
 
-            {/* Advertise Section */}
-            <section id="advertise" className="mt-16">
-              <Card className="bg-gradient-to-r from-fresh-green-light to-cream border-fresh-green/20">
-                <CardContent className="p-8">
-                  <div className="max-w-2xl mx-auto text-center space-y-6">
-                    <h2 className="text-3xl font-bold text-foreground">
-                      Partner with ImporTrade
-                    </h2>
-                    <p className="text-lg text-muted-foreground">
-                      Reach conscious shoppers looking for sustainable, premium products. 
-                      Feature your brand in our curated collections.
-                    </p>
-                    
-                    <div className="grid md:grid-cols-2 gap-4 max-w-lg mx-auto">
-                      <Input placeholder="Your Name" />
-                      <Input placeholder="Company" />
-                      <Input placeholder="Email" className="md:col-span-2" />
-                      <Textarea 
-                        placeholder="Tell us about your products..."
-                        className="md:col-span-2 h-24"
-                      />
-                    </div>
-                    
-                    <Button variant="fresh" size="lg" className="gap-2">
-                      <Mail className="h-4 w-4" />
-                      Get in Touch
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Partner with Us */}
+            <section className="bg-muted/50 rounded-lg p-8">
+              <h2 className="text-3xl font-bold mb-6 text-center">Partner With ImporTrade</h2>
+              <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join our network of sustainable businesses and reach customers who care about quality and sustainability.
+              </p>
+              <div className="max-w-md mx-auto space-y-4">
+                <Input placeholder="Your Name" />
+                <Input placeholder="Company" />
+                <Input placeholder="Email" />
+                <Textarea 
+                  placeholder="Tell us about your products..."
+                  className="h-24"
+                />
+                <Button className="w-full" variant="fresh">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Get in Touch
+                </Button>
+              </div>
             </section>
-            </div>
           </div>
         </div>
       </div>

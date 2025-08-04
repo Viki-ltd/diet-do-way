@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { FilterSidebar } from "@/components/FilterSidebar";
 import { AdvertisingBanner } from "@/components/AdvertisingBanner";
+import { FilterSidebar } from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { mockProducts } from "@/data/mockData";
-import { AppSidebar } from "@/components/AppSidebar";
-import { Breadcrumb } from "@/components/Breadcrumb";
-import PageHeader from "@/components/PageHeader";
-import CartDrawer from "@/components/CartDrawer";
 import SearchBar from "@/components/SearchBar";
+import CartDrawer from "@/components/CartDrawer";
+import { Button } from "@/components/ui/button";
+import { Filter } from "lucide-react";
+import { mockProducts } from "@/data/mockData";
 import {
   Pagination,
   PaginationContent,
@@ -49,94 +46,118 @@ export default function Products() {
   const currentProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-cream to-natural-beige">
-      <div className="flex w-full">
-        <AppSidebar />
-        <div className="flex-1 min-w-0">
-          <PageHeader
-            title="Premium Products"
-            description="Discover carefully curated ingredients and specialty foods from around the world"
-            imageUrl="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200"
-            badge="Global Marketplace"
-            stats={[
-              { label: "Products", value: mockProducts.length.toString() },
-              { label: "Countries", value: "25+" },
-              { label: "Avg Rating", value: "4.8" }
-            ]}
-          />
-          
-          <div className="w-full px-6 md:px-12 py-8">
-            <Breadcrumb />
-
-            <AdvertisingBanner />
-            
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-nature bg-clip-text text-transparent">
-                Products ({filteredProducts.length})
-              </h2>
-              <div className="flex items-center gap-4">
-                <SearchBar 
-                  placeholder="Search products..."
-                  onSearch={setSearchQuery}
-                  className="w-64"
-                />
-                <CartDrawer />
-              </div>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="bg-background py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl font-bold mb-4">Premium Products</h1>
+          <p className="text-xl text-muted-foreground mb-8">
+            Discover our collection of sustainable, high-quality ingredients and products
+          </p>
+          <div className="flex justify-center gap-4">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">{mockProducts.length}+</div>
+              <div className="text-sm text-muted-foreground">Products</div>
             </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">25+</div>
+              <div className="text-sm text-muted-foreground">Countries</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">4.8★</div>
+              <div className="text-sm text-muted-foreground">Avg Rating</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="flex gap-8">
-              {/* Sidebar */}
-              <div className={`${showFilters ? 'block' : 'hidden'} md:block w-80 shrink-0`}>
-                <FilterSidebar filters={filters} onFiltersChange={setFilters} />
-              </div>
+      <div className="container mx-auto px-4 py-8">
+        <AdvertisingBanner className="mb-8" />
+        
+        {/* Search and Filter */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="flex-1">
+            <SearchBar 
+              placeholder="Search products..."
+              onSearch={setSearchQuery}
+              className="w-full"
+            />
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+          <CartDrawer />
+        </div>
 
-              {/* Main Content */}
-              <div className="flex-1">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        <div className="flex gap-8">
+          {showFilters && (
+            <div className="w-72 flex-shrink-0">
+              <FilterSidebar 
+                filters={filters}
+                onFiltersChange={setFilters}
+                className="sticky top-4"
+              />
+            </div>
+          )}
+          
+          <div className="flex-1">
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {currentProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
-            {totalPages > 1 && (
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      href="#" 
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    />
-                  </PaginationItem>
-                  
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const page = i + 1;
-                    return (
-                      <PaginationItem key={page}>
-                        <PaginationLink 
-                          href="#" 
-                          isActive={currentPage === page}
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
-                  
-                  {totalPages > 5 && <PaginationEllipsis />}
-                  
-                  <PaginationItem>
-                    <PaginationNext 
-                      href="#" 
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-semibold mb-2">No products found</h3>
+                <p className="text-muted-foreground">Try adjusting your search or filters</p>
               </div>
-            </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#" 
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const page = i + 1;
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationLink 
+                            href="#" 
+                            isActive={currentPage === page}
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+                    
+                    {totalPages > 5 && <PaginationEllipsis />}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#" 
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         </div>
       </div>
