@@ -25,6 +25,7 @@ export default function Products() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerRow, setItemsPerRow] = useState(3);
   const productsPerPage = 20;
 
   const filteredProducts = mockProducts.filter(product => {
@@ -74,24 +75,47 @@ export default function Products() {
       <div className="container mx-auto px-4 py-8">
         <AdvertisingBanner className="mb-8" />
         
-        {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex-1">
-            <SearchBar 
-              placeholder="Search products..."
-              onSearch={setSearchQuery}
-              className="w-full"
-            />
+        {/* Search, Filter and View Options */}
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <SearchBar 
+                placeholder="Search products..."
+                onSearch={setSearchQuery}
+                className="w-full"
+              />
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </Button>
+            <CartDrawer />
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
-          </Button>
-          <CartDrawer />
+          
+          {/* View Options */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Showing {currentProducts.length} of {filteredProducts.length} products
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Items per row:</span>
+              {[2, 3, 4, 5, 6].map((num) => (
+                <Button
+                  key={num}
+                  variant={itemsPerRow === num ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setItemsPerRow(num)}
+                  className="w-8 h-8 p-0"
+                >
+                  {num}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-8">
@@ -107,7 +131,13 @@ export default function Products() {
           
           <div className="flex-1">
             {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={`grid gap-6 ${
+              itemsPerRow === 2 ? 'grid-cols-1 md:grid-cols-2' :
+              itemsPerRow === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+              itemsPerRow === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' :
+              itemsPerRow === 5 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
+              'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6'
+            }`}>
               {currentProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

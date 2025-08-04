@@ -37,7 +37,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage/5 via-background to-earth/5">
+    <div className="min-h-screen bg-background">
       <PageHeader
         title="Account Settings"
         description="Manage your ImporTrade account preferences and settings"
@@ -52,7 +52,7 @@ const Settings = () => {
 
       <div className="container mx-auto px-6 py-12">
         <Tabs defaultValue="profile" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 bg-white/80 backdrop-blur">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 bg-white/80 backdrop-blur">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="w-4 h-4" />
               Profile
@@ -72,6 +72,10 @@ const Settings = () => {
             <TabsTrigger value="preferences" className="flex items-center gap-2">
               <Palette className="w-4 h-4" />
               Preferences
+            </TabsTrigger>
+            <TabsTrigger value="affiliate" className="flex items-center gap-2">
+              <span className="w-4 h-4">💰</span>
+              Affiliate
             </TabsTrigger>
           </TabsList>
 
@@ -144,7 +148,7 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <Button onClick={() => handleSave("profile")} className="bg-gradient-to-r from-sage to-earth text-white">
+                <Button onClick={() => handleSave("profile")} className="bg-sage text-white hover:bg-sage/90">
                   <Save className="w-4 h-4 mr-2" />
                   Save Profile
                 </Button>
@@ -208,7 +212,7 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <Button onClick={() => handleSave("notifications")} className="bg-gradient-to-r from-sage to-earth text-white">
+                <Button onClick={() => handleSave("notifications")} className="bg-sage text-white hover:bg-sage/90">
                   <Save className="w-4 h-4 mr-2" />
                   Save Preferences
                 </Button>
@@ -260,7 +264,7 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <Button onClick={() => handleSave("security")} className="bg-gradient-to-r from-sage to-earth text-white">
+                <Button onClick={() => handleSave("security")} className="bg-sage text-white hover:bg-sage/90">
                   <Save className="w-4 h-4 mr-2" />
                   Update Security
                 </Button>
@@ -384,14 +388,97 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <Button onClick={() => handleSave("preferences")} className="bg-gradient-to-r from-sage to-earth text-white">
+                <Button onClick={() => handleSave("preferences")} className="bg-sage text-white hover:bg-sage/90">
                   <Save className="w-4 h-4 mr-2" />
                   Save Preferences
                 </Button>
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Affiliate Program */}
+          <TabsContent value="affiliate" className="space-y-6">
+            <Card className="border-2 border-sage/20 shadow-lg bg-white/95 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-earth">
+                  <span className="text-xl">💰</span>
+                  Be Our Affiliate
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center py-8">
+                  <h3 className="text-2xl font-bold text-earth mb-4">Earn 10% Commission</h3>
+                  <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                    Join our affiliate program and earn commissions by promoting ImporTrade's premium products. 
+                    Perfect for food bloggers, influencers, and sustainable living advocates.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-3xl font-bold text-sage mb-2">10%</div>
+                      <div className="text-sm text-muted-foreground">Commission Rate</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-3xl font-bold text-sage mb-2">30</div>
+                      <div className="text-sm text-muted-foreground">Cookie Duration (days)</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-3xl font-bold text-sage mb-2">$25</div>
+                      <div className="text-sm text-muted-foreground">Minimum Payout</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-earth">How It Works:</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="p-4 bg-sage/10 rounded-lg">
+                        <div className="font-medium mb-2">1. Apply</div>
+                        <div className="text-muted-foreground">Fill out our affiliate application form</div>
+                      </div>
+                      <div className="p-4 bg-sage/10 rounded-lg">
+                        <div className="font-medium mb-2">2. Promote</div>
+                        <div className="text-muted-foreground">Share your unique referral links</div>
+                      </div>
+                      <div className="p-4 bg-sage/10 rounded-lg">
+                        <div className="font-medium mb-2">3. Earn</div>
+                        <div className="text-muted-foreground">Get paid monthly for qualified sales</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8 space-y-4">
+                    <Input placeholder="Your Website or Social Media" />
+                    <Input placeholder="Monthly Traffic/Followers" />
+                    <Button className="bg-sage text-white hover:bg-sage/90" size="lg">
+                      Apply for Affiliate Program
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-6 pt-6 border-t">
+                    <p className="text-xs text-muted-foreground">
+                      By applying, you agree to our{" "}
+                      <button className="text-sage hover:underline">Affiliate Terms</button>{" "}
+                      and{" "}
+                      <button className="text-sage hover:underline">Commission Structure</button>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+        
+        {/* Legal Links Footer */}
+        <div className="mt-12 pt-8 border-t border-sage/20">
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
+            <button className="hover:text-sage transition-colors">Terms of Service</button>
+            <button className="hover:text-sage transition-colors">Privacy Policy</button>
+            <button className="hover:text-sage transition-colors">Cookie Policy</button>
+            <button className="hover:text-sage transition-colors">Affiliate Agreement</button>
+            <button className="hover:text-sage transition-colors">Refund Policy</button>
+            <button className="hover:text-sage transition-colors">Contact Legal</button>
+          </div>
+        </div>
       </div>
     </div>
   );

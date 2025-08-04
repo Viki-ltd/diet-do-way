@@ -16,6 +16,7 @@ export interface DietaryPreferences {
   lowCarb: boolean;
   email: string;
   name: string;
+  userType: 'business' | 'customer';
 }
 
 export const OnboardingForm = ({ onComplete }: OnboardingFormProps) => {
@@ -25,6 +26,7 @@ export const OnboardingForm = ({ onComplete }: OnboardingFormProps) => {
     lowCarb: false,
     email: "",
     name: "",
+    userType: 'customer',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -37,7 +39,7 @@ export const OnboardingForm = ({ onComplete }: OnboardingFormProps) => {
   const isValid = preferences.email && preferences.name;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-cream to-fresh-green-light flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-card">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
@@ -54,6 +56,28 @@ export const OnboardingForm = ({ onComplete }: OnboardingFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
+              <div>
+                <Label className="text-base font-medium">Who are you?</Label>
+                <div className="flex gap-4 mt-2">
+                  <Button
+                    type="button"
+                    variant={preferences.userType === 'customer' ? 'default' : 'outline'}
+                    onClick={() => setPreferences({ ...preferences, userType: 'customer' })}
+                    className="flex-1"
+                  >
+                    Customer
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={preferences.userType === 'business' ? 'default' : 'outline'}
+                    onClick={() => setPreferences({ ...preferences, userType: 'business' })}
+                    className="flex-1"
+                  >
+                    Business
+                  </Button>
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="name">Your Name</Label>
                 <Input

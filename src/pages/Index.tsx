@@ -60,8 +60,11 @@ const Index = () => {
             </div>
           </div>
           
-          {/* User Preferences Display */}
+            {/* User Type and Preferences Display */}
           <div className="flex justify-center gap-3 mt-6">
+            <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20">
+              {userPreferences.userType === 'business' ? '🏢 Business Account' : '👤 Customer Account'}
+            </span>
             {userPreferences.glutenFree && (
               <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20">
                 Gluten-Free
@@ -158,26 +161,52 @@ const Index = () => {
               </div>
             </section>
 
-            {/* Partner with Us */}
-            <section className="bg-muted/50 rounded-lg p-8">
-              <h2 className="text-3xl font-bold mb-6 text-center">Partner With ImporTrade</h2>
-              <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join our network of sustainable businesses and reach customers who care about quality and sustainability.
-              </p>
-              <div className="max-w-md mx-auto space-y-4">
-                <Input placeholder="Your Name" />
-                <Input placeholder="Company" />
-                <Input placeholder="Email" />
-                <Textarea 
-                  placeholder="Tell us about your products..."
-                  className="h-24"
-                />
-                <Button className="w-full" variant="fresh">
-                  <Mail className="h-4 w-4 mr-2" />
-                  Get in Touch
-                </Button>
-              </div>
-            </section>
+            {/* Partner with Us - Only show for customers */}
+            {userPreferences.userType === 'customer' && (
+              <section className="bg-muted/50 rounded-lg p-8">
+                <h2 className="text-3xl font-bold mb-6 text-center">Partner With ImporTrade</h2>
+                <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  Join our network of sustainable businesses and reach customers who care about quality and sustainability.
+                </p>
+                <div className="max-w-md mx-auto space-y-4">
+                  <Input placeholder="Your Name" />
+                  <Input placeholder="Company" />
+                  <Input placeholder="Email" />
+                  <Textarea 
+                    placeholder="Tell us about your products..."
+                    className="h-24"
+                  />
+                  <Button className="w-full" variant="fresh">
+                    <Mail className="h-4 w-4 mr-2" />
+                    Get in Touch
+                  </Button>
+                </div>
+              </section>
+            )}
+
+            {/* Business Dashboard - Only show for businesses */}
+            {userPreferences.userType === 'business' && (
+              <section className="bg-muted/50 rounded-lg p-8">
+                <h2 className="text-3xl font-bold mb-6 text-center">Your Business Dashboard</h2>
+                <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  Access your business tools, manage listings, and track performance.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button className="h-20 flex flex-col gap-2" variant="outline">
+                    <span className="text-lg">📊</span>
+                    Analytics
+                  </Button>
+                  <Button className="h-20 flex flex-col gap-2" variant="outline">
+                    <span className="text-lg">📦</span>
+                    Manage Products
+                  </Button>
+                  <Button className="h-20 flex flex-col gap-2" variant="outline">
+                    <span className="text-lg">💼</span>
+                    Business Profile
+                  </Button>
+                </div>
+              </section>
+            )}
           </div>
         </div>
       </div>

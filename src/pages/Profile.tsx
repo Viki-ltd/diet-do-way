@@ -38,9 +38,22 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header showFilters={false} onToggleFilters={() => {}} />
-      
-      <div className="container mx-auto px-4 py-8">
+      <div className="w-full">
+        {/* Hero Banner */}
+        <div className="relative h-64 bg-fresh-green-light overflow-hidden mb-8">
+          <img 
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200" 
+            alt="Profile Banner" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30"></div>
+          <div className="absolute bottom-6 left-6 text-white">
+            <h1 className="text-4xl font-bold mb-2">My Account</h1>
+            <p className="text-lg opacity-90">Manage your preferences and orders</p>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-8">
         {/* Profile Header */}
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <Avatar className="w-24 h-24">
@@ -55,7 +68,7 @@ const Profile = () => {
               <Badge variant="outline">Food Enthusiast</Badge>
             </div>
           </div>
-          <Button variant="luxury">Edit Profile</Button>
+          <Button variant="default">Edit Profile</Button>
         </div>
 
         {/* Profile Tabs */}
@@ -118,7 +131,7 @@ const Profile = () => {
                       <h3 className="font-semibold text-sm mb-2">{item.name}</h3>
                       <div className="flex justify-between items-center">
                         <span className="font-bold text-primary">{item.price}</span>
-                        <Button size="sm" variant="luxury">Add to Cart</Button>
+                        <Button size="sm" variant="default">Add to Cart</Button>
                       </div>
                     </div>
                   ))}
@@ -177,7 +190,7 @@ const Profile = () => {
                     <Label htmlFor="phone">Phone</Label>
                     <Input id="phone" defaultValue="+1 (555) 123-4567" />
                   </div>
-                  <Button variant="luxury">Save Changes</Button>
+                  <Button variant="default">Save Changes</Button>
                 </CardContent>
               </Card>
 
@@ -243,6 +256,7 @@ const Profile = () => {
             </div>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   );
