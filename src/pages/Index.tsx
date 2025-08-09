@@ -41,9 +41,9 @@ const Index = () => {
       {/* Hero Section */}
       <section className="bg-background py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Welcome to ImporTrade, {userPreferences.name}!</h1>
+          <h1 className="text-4xl font-bold mb-4">Made in UAE Marketplace</h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Discover sustainable, premium ingredients and connect with local businesses for a greener, healthier lifestyle
+            Direct from UAE manufacturers and farmers - Premium quality, locally sourced products supporting our economy
           </p>
           <div className="flex justify-center gap-4">
             <div className="text-center">

@@ -36,12 +36,12 @@ const mainItems = [
   { title: "Recipes", url: "/recipes", icon: ChefHat },
   { title: "Local Partners", url: "/local-business", icon: Building2 },
   { title: "Gift Hampers", url: "/gift-hampers", icon: Gift },
-  { title: "Pre-Order (30% Off)", url: "/pre-order", icon: Calendar },
   { title: "Affiliate Program", url: "/affiliate", icon: Users },
 ];
 
 const businessItems = [
   { title: "Procurement Center", url: "/procurement", icon: Store },
+  { title: "Pre-Order (30% Off)", url: "/pre-order", icon: Calendar },
   { title: "Advertise", url: "/advertise", icon: Megaphone },
 ];
 
