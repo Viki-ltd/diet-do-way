@@ -21,6 +21,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import GiftHampers from "./pages/GiftHampers";
 import PreOrder from "./pages/PreOrder";
+import MadeInUAE from "./pages/MadeInUAE";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -64,6 +65,7 @@ const App = () => (
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/gift-hampers" element={<GiftHampers />} />
                   <Route path="/pre-order" element={<PreOrder />} />
+                  <Route path="/made-in-uae" element={<MadeInUAE />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/customer-profile" element={<CustomerProfile />} />
                   <Route path="/settings" element={<Settings />} />

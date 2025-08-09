@@ -41,6 +41,7 @@ const mainItems = [
 
 const businessItems = [
   { title: "Procurement Center", url: "/procurement", icon: Store },
+  { title: "Made in UAE", url: "/made-in-uae", icon: Building2 },
   { title: "Pre-Order (30% Off)", url: "/pre-order", icon: Calendar },
   { title: "Advertise", url: "/advertise", icon: Megaphone },
 ];
