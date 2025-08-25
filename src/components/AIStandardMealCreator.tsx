@@ -34,62 +34,26 @@ export function AIStandardMealCreator({ isOpen, onOpenChange, onMealCreated }: A
     setIsGenerating(true);
     
     try {
-      // Simulate AI processing for now - in real app would call AI service
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Input validation and sanitization
+      if (!description || description.trim().length === 0) {
+        throw new Error("Please provide a meal description");
+      }
       
-      // Mock AI-generated meal data
-      const aiGeneratedMeal = {
-        id: Date.now().toString(),
-        name: description,
-        mealType,
-        preparationType,
-        foods: [
-          {
-            name: "Grilled Chicken Breast",
-            calories: 231,
-            protein: 43.5,
-            carbs: 0,
-            fat: 5,
-            fiber: 0,
-            serving: "1 breast (172g)",
-            quantity: 1
-          },
-          {
-            name: "Brown Rice",
-            calories: 216,
-            protein: 5,
-            carbs: 45,
-            fat: 1.8,
-            fiber: 3.5,
-            serving: "1 cup cooked",
-            quantity: 0.75
-          },
-          {
-            name: "Steamed Broccoli",
-            calories: 25,
-            protein: 3,
-            carbs: 5,
-            fat: 0.3,
-            fiber: 2.6,
-            serving: "1 cup",
-            quantity: 1
-          }
-        ]
-      };
-
-      onMealCreated(aiGeneratedMeal);
-      setDescription('');
-      onOpenChange(false);
+      if (description.length > 200) {
+        throw new Error("Meal description too long. Please keep it under 200 characters");
+      }
       
+      const sanitizedDescription = description.trim().replace(/[<>]/g, '');
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Placeholder error instead of mock data
+      throw new Error("AI meal creation is currently unavailable. Please manually create meals or contact support to enable AI functionality.");
+      
+    } catch (error: any) {
       toast({
-        title: "AI Meal Created! ✨",
-        description: `Generated ${description} with calculated macros`,
-      });
-      
-    } catch (error) {
-      toast({
-        title: "Generation Failed",
-        description: "Sorry, couldn't generate the meal. Please try again.",
+        title: "Error",
+        description: error.message,
         variant: "destructive"
       });
     } finally {

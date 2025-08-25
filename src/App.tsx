@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { HeaderActions } from "@/components/HeaderActions";
 import { AppSidebar } from "@/components/AppSidebar";
 import { NutritionTracker as NutritionWidget } from "@/components/NutritionTracker";
 import Footer from "@/components/Footer";
@@ -35,43 +38,45 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SidebarProvider>
+        <AuthProvider>
+          <SidebarProvider>
           <div className="min-h-screen flex w-full bg-background">
             <AppSidebar />
             
             <div className="flex-1 flex flex-col w-0 min-w-0">
               {/* Global Header with Sidebar Trigger */}
-              <header className="h-12 flex items-center border-b border-earth/20 bg-white/90 backdrop-blur px-4">
-                <SidebarTrigger className="mr-2" />
+              <header className="h-12 flex items-center justify-between border-b border-earth/20 bg-white/90 backdrop-blur px-4">
                 <div className="flex items-center space-x-2">
+                  <SidebarTrigger className="mr-2" />
                   <div className="h-6 w-6 rounded bg-gradient-to-br from-sage to-earth flex items-center justify-center">
                     <span className="text-white font-bold text-xs">IT</span>
                   </div>
                   <span className="font-semibold text-earth">ImporTrade</span>
                 </div>
+                <HeaderActions />
               </header>
 
               {/* Main Content */}
               <main className="flex-1 overflow-auto">
                 <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/recipes" element={<Recipes />} />
-                  <Route path="/recipes/:id" element={<RecipeDetail />} />
-                  <Route path="/recipes/submit" element={<SubmitRecipe />} />
-                  <Route path="/local-business" element={<LocalBusiness />} />
-                  <Route path="/advertise" element={<Advertise />} />
-                  <Route path="/affiliate" element={<Affiliate />} />
-                  <Route path="/procurement" element={<ProcurementCenter />} />
+                  <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                  <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+                  <Route path="/recipes" element={<ProtectedRoute><Recipes /></ProtectedRoute>} />
+                  <Route path="/recipes/:id" element={<ProtectedRoute><RecipeDetail /></ProtectedRoute>} />
+                  <Route path="/recipes/submit" element={<ProtectedRoute><SubmitRecipe /></ProtectedRoute>} />
+                  <Route path="/local-business" element={<ProtectedRoute><LocalBusiness /></ProtectedRoute>} />
+                  <Route path="/advertise" element={<ProtectedRoute><Advertise /></ProtectedRoute>} />
+                  <Route path="/affiliate" element={<ProtectedRoute><Affiliate /></ProtectedRoute>} />
+                  <Route path="/procurement" element={<ProtectedRoute><ProcurementCenter /></ProtectedRoute>} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/gift-hampers" element={<GiftHampers />} />
-                  <Route path="/pre-order" element={<PreOrder />} />
-                  <Route path="/made-in-uae" element={<MadeInUAE />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/customer-profile" element={<CustomerProfile />} />
-                  <Route path="/nutrition" element={<NutritionTracker />} />
-                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/gift-hampers" element={<ProtectedRoute><GiftHampers /></ProtectedRoute>} />
+                  <Route path="/pre-order" element={<ProtectedRoute><PreOrder /></ProtectedRoute>} />
+                  <Route path="/made-in-uae" element={<ProtectedRoute><MadeInUAE /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/customer-profile" element={<ProtectedRoute><CustomerProfile /></ProtectedRoute>} />
+                  <Route path="/nutrition" element={<ProtectedRoute><NutritionTracker /></ProtectedRoute>} />
+                  <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Footer />
@@ -82,6 +87,7 @@ const App = () => (
             <NutritionWidget />
           </div>
         </SidebarProvider>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

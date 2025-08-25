@@ -39,46 +39,36 @@ export function NutritionChat({ isOpen, onOpenChange, onNutritionAdd, userProfil
   const { toast } = useToast();
 
   const extractNutritionFromText = async (text: string) => {
-    // Mock NLP extraction - in production this would call an AI service
-    const nutrition = {
-      name: text.slice(0, 50) + (text.length > 50 ? "..." : ""),
-      calories: Math.floor(Math.random() * 400) + 200,
-      protein: Math.floor(Math.random() * 30) + 10,
-      carbs: Math.floor(Math.random() * 40) + 15,
-      fat: Math.floor(Math.random() * 20) + 5,
-      fiber: Math.floor(Math.random() * 8) + 2,
-      sugar: Math.floor(Math.random() * 15) + 2,
-      sodium: Math.floor(Math.random() * 500) + 100,
-      serving: "1 portion",
-      mealType: "snack" as const
-    };
+    // Input validation and sanitization
+    if (!text || text.trim().length === 0) {
+      throw new Error("Please provide food description");
+    }
     
-    return nutrition;
+    if (text.length > 500) {
+      throw new Error("Description too long. Please keep it under 500 characters");
+    }
+    
+    // Sanitize input to prevent XSS
+    const sanitizedText = text.trim().replace(/[<>]/g, '');
+    
+    // Placeholder - AI nutrition extraction not yet implemented
+    throw new Error("AI nutrition analysis is currently unavailable. Please manually enter nutrition data or contact support to enable this feature.");
   };
 
   const analyzeImage = async (file: File) => {
-    // Mock image analysis - in production this would use AI vision
-    const foods = [
-      "Grilled chicken breast with vegetables",
-      "Caesar salad with croutons",
-      "Salmon with rice and broccoli",
-      "Pasta with marinara sauce",
-      "Greek yogurt with berries"
-    ];
+    // Validate file type and size for security
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error("Please upload a valid image file (JPEG, PNG, or WebP)");
+    }
     
-    const randomFood = foods[Math.floor(Math.random() * foods.length)];
-    return {
-      name: randomFood,
-      calories: Math.floor(Math.random() * 500) + 300,
-      protein: Math.floor(Math.random() * 35) + 15,
-      carbs: Math.floor(Math.random() * 50) + 20,
-      fat: Math.floor(Math.random() * 25) + 8,
-      fiber: Math.floor(Math.random() * 10) + 3,
-      sugar: Math.floor(Math.random() * 12) + 3,
-      sodium: Math.floor(Math.random() * 600) + 200,
-      serving: "1 serving",
-      mealType: "lunch" as const
-    };
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      throw new Error("Image file too large. Please upload an image smaller than 5MB");
+    }
+    
+    // Placeholder - AI image analysis not yet implemented
+    throw new Error("AI image analysis is currently unavailable. Please manually enter nutrition information or contact support to enable this feature.");
   };
 
   const handleSendMessage = async () => {

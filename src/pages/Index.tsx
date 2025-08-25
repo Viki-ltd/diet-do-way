@@ -45,7 +45,7 @@ const Index = () => {
           <p className="text-xl text-muted-foreground mb-8">
             Direct from UAE manufacturers and farmers - Premium quality, locally sourced products supporting our economy
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4 mb-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">500+</div>
               <div className="text-sm text-muted-foreground">Products</div>
@@ -58,6 +58,15 @@ const Index = () => {
               <div className="text-3xl font-bold text-primary">95%</div>
               <div className="text-sm text-muted-foreground">Satisfaction</div>
             </div>
+          </div>
+          
+          <div className="flex justify-center gap-4">
+            <Button asChild variant="default" size="lg">
+              <a href="/nutrition">Nutrition Tracker</a>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <a href="/products">Browse Products</a>
+            </Button>
           </div>
           
             {/* User Type and Preferences Display */}
