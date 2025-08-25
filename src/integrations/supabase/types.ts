@@ -7,14 +7,139 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
-      [_ in never]: never
+      food_entries: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string
+          fat: number
+          fiber: number | null
+          id: string
+          meal_type: string | null
+          name: string
+          protein: number
+          quantity: number | null
+          serving_size: string | null
+          sodium: number | null
+          source: string | null
+          sugar: number | null
+          user_id: string
+        }
+        Insert: {
+          calories: number
+          carbs: number
+          created_at?: string
+          fat: number
+          fiber?: number | null
+          id?: string
+          meal_type?: string | null
+          name: string
+          protein: number
+          quantity?: number | null
+          serving_size?: string | null
+          sodium?: number | null
+          source?: string | null
+          sugar?: number | null
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          fat?: number
+          fiber?: number | null
+          id?: string
+          meal_type?: string | null
+          name?: string
+          protein?: number
+          quantity?: number | null
+          serving_size?: string | null
+          sodium?: number | null
+          source?: string | null
+          sugar?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nutrition_chat_messages: {
+        Row: {
+          created_at: string
+          extracted_nutrition: Json | null
+          id: string
+          message: string
+          response: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          extracted_nutrition?: Json | null
+          id?: string
+          message: string
+          response?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          extracted_nutrition?: Json | null
+          id?: string
+          message?: string
+          response?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          activity_level: string | null
+          age: number | null
+          created_at: string
+          cuisine_type: string | null
+          dietary_type: string | null
+          gender: string | null
+          goal: string | null
+          height: number | null
+          id: string
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          age?: number | null
+          created_at?: string
+          cuisine_type?: string | null
+          dietary_type?: string | null
+          gender?: string | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          age?: number | null
+          created_at?: string
+          cuisine_type?: string | null
+          dietary_type?: string | null
+          gender?: string | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

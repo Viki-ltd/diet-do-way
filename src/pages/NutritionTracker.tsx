@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import PageHeader from "@/components/PageHeader";
-import { Plus, Target, Utensils, Search, Clock, ChefHat, Trash2, Edit } from "lucide-react";
+import { NutritionChat } from "@/components/NutritionChat";
+import { NutritionSettings } from "@/components/NutritionSettings";
+import { Plus, Target, Utensils, Search, Clock, ChefHat, Trash2, Edit, Calendar, BarChart3, MessageCircle } from "lucide-react";
 
 interface UserProfile {
   gender: 'male' | 'female' | 'other';
@@ -131,6 +133,9 @@ export default function NutritionTracker() {
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   const [isAddFoodOpen, setIsAddFoodOpen] = useState(false);
   const [isAddMealOpen, setIsAddMealOpen] = useState(false);
+  const [viewPeriod, setViewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showNutritionChat, setShowNutritionChat] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     gender: 'female',
     age: 28,
@@ -232,6 +237,29 @@ export default function NutritionTracker() {
     setIsAddFoodOpen(false);
   };
 
+  const addNutritionFromChat = (nutrition: any) => {
+    const newMeal: Meal = {
+      id: Date.now().toString(),
+      name: nutrition.name,
+      type: nutrition.mealType || 'snack',
+      foods: [{
+        id: Date.now().toString(),
+        name: nutrition.name,
+        calories: nutrition.calories,
+        protein: nutrition.protein,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat,
+        fiber: nutrition.fiber || 0,
+        sugar: nutrition.sugar || 0,
+        sodium: nutrition.sodium || 0,
+        serving: nutrition.serving || "1 portion",
+        quantity: 1
+      }],
+      timestamp: new Date()
+    };
+    setMeals(prev => [...prev, newMeal]);
+  };
+
   const deleteMeal = (mealId: string) => {
     setMeals(prev => prev.filter(meal => meal.id !== mealId));
   };
@@ -241,10 +269,78 @@ export default function NutritionTracker() {
   );
 
   const getMealsByType = (type: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
-    const today = new Date().toDateString();
+    const filterDate = getFilterDate();
     return meals.filter(meal => 
-      meal.type === type && meal.timestamp.toDateString() === today
+      meal.type === type && isWithinPeriod(meal.timestamp, filterDate)
     );
+  };
+
+  const getFilterDate = () => {
+    const now = new Date();
+    switch (viewPeriod) {
+      case 'weekly':
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay());
+        return weekStart;
+      case 'monthly':
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+      default:
+        return new Date(now.toDateString());
+    }
+  };
+
+  const isWithinPeriod = (mealDate: Date, filterDate: Date) => {
+    const mealDay = new Date(mealDate.toDateString());
+    switch (viewPeriod) {
+      case 'weekly':
+        const weekEnd = new Date(filterDate);
+        weekEnd.setDate(filterDate.getDate() + 6);
+        return mealDay >= filterDate && mealDay <= weekEnd;
+      case 'monthly':
+        const monthEnd = new Date(filterDate.getFullYear(), filterDate.getMonth() + 1, 0);
+        return mealDay >= filterDate && mealDay <= monthEnd;
+      default:
+        return mealDay.getTime() === filterDate.getTime();
+    }
+  };
+
+  const getPersonalizedMealSuggestions = () => {
+    const { dietaryType, cuisineType } = userProfile;
+    
+    const suggestions = {
+      mediterranean: {
+        breakfast: ["Greek Yogurt with Honey & Nuts", "Olive Oil Toast with Tomatoes"],
+        lunch: ["Mediterranean Quinoa Bowl", "Grilled Fish with Vegetables"],
+        dinner: ["Salmon with Lemon & Herbs", "Chickpea Stew"],
+        snack: ["Hummus with Vegetables", "Mixed Nuts & Dried Fruits"]
+      },
+      asian: {
+        breakfast: ["Miso Soup with Tofu", "Rice Porridge with Ginger"],
+        lunch: ["Teriyaki Chicken Bowl", "Vegetable Stir Fry"],
+        dinner: ["Grilled Salmon Teriyaki", "Tofu Curry"],
+        snack: ["Edamame", "Green Tea with Almonds"]
+      },
+      'middle-eastern': {
+        breakfast: ["Shakshuka", "Labneh with Za'atar"],
+        lunch: ["Chicken Shawarma Bowl", "Falafel Salad"],
+        dinner: ["Grilled Lamb with Tabbouleh", "Stuffed Bell Peppers"],
+        snack: ["Dates with Nuts", "Cucumber with Hummus"]
+      },
+      western: {
+        breakfast: ["Avocado Toast", "Protein Smoothie Bowl"],
+        lunch: ["Grilled Chicken Salad", "Turkey Sandwich"],
+        dinner: ["Grilled Steak with Vegetables", "Baked Cod"],
+        snack: ["Apple with Peanut Butter", "Greek Yogurt"]
+      },
+      mixed: {
+        breakfast: ["Overnight Oats", "Protein Pancakes"],
+        lunch: ["Buddha Bowl", "Quinoa Salad"],
+        dinner: ["Lean Protein with Vegetables", "Lentil Curry"],
+        snack: ["Trail Mix", "Smoothie"]
+      }
+    };
+    
+    return suggestions[cuisineType] || suggestions.mixed;
   };
 
   const getProgressColor = (current: number, goal: number) => {
@@ -262,19 +358,69 @@ export default function NutritionTracker() {
         imageUrl="/placeholder.svg"
       />
       
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Daily Summary */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-4">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="grid xl:grid-cols-4 lg:grid-cols-3 gap-6">
+          {/* Sidebar */}
+          <div className="xl:col-span-1 lg:col-span-1 space-y-4">
+            {/* Period Filter & Settings */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">View & Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <Label className="text-xs">Time Period</Label>
+                  <Select value={viewPeriod} onValueChange={(value: any) => setViewPeriod(value)}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <NutritionSettings 
+                  profile={userProfile}
+                  onProfileUpdate={setUserProfile}
+                  isOpen={isSettingsOpen}
+                  onOpenChange={setIsSettingsOpen}
+                />
+              </CardContent>
+            </Card>
+
+            {/* AI Assistant */}
+            <div className="space-y-2">
+              <Button
+                onClick={() => setShowNutritionChat(!showNutritionChat)}
+                variant={showNutritionChat ? "default" : "outline"}
+                className="w-full bg-sage hover:bg-sage/90"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                AI Nutrition Assistant
+              </Button>
+              
+              {showNutritionChat && (
+                <NutritionChat onNutritionAdded={addNutritionFromChat} />
+              )}
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="xl:col-span-2 lg:col-span-1">
+            {/* Goals Summary */}
+            <Card className="mb-6">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-sage" />
-                  Daily Goals
-                </CardTitle>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline">{userProfile.dietaryType}</Badge>
-                  <Badge variant="outline">{userProfile.goal} weight</Badge>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-sage" />
+                    {viewPeriod === 'daily' ? 'Daily' : viewPeriod === 'weekly' ? 'Weekly' : 'Monthly'} Goals
+                  </CardTitle>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="outline">{userProfile.dietaryType}</Badge>
+                    <Badge variant="outline">{userProfile.goal} weight</Badge>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -333,15 +479,38 @@ export default function NutritionTracker() {
                     <span>Sodium</span>
                     <span>{Math.round(dailyTotals.sodium)}mg / {goals.sodium}mg</span>
                   </div>
+                  <div className="mt-3 pt-3 border-t">
+                    <div className="text-xs font-medium mb-2">Detailed Breakdown</div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <div>Saturated Fat</div>
+                        <div className="text-muted-foreground">{Math.round(dailyTotals.fat * 0.3)}g</div>
+                      </div>
+                      <div>
+                        <div>Trans Fat</div>
+                        <div className="text-muted-foreground">{Math.round(dailyTotals.fat * 0.1)}g</div>
+                      </div>
+                      <div>
+                        <div>Cholesterol</div>
+                        <div className="text-muted-foreground">{Math.round(dailyTotals.protein * 2)}mg</div>
+                      </div>
+                      <div>
+                        <div>Potassium</div>
+                        <div className="text-muted-foreground">{Math.round(dailyTotals.calories * 1.5)}mg</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Meal Tracking */}
-          <div className="lg:col-span-2">
+            {/* Meal Tracking */}
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-sage">Today's Meals</h2>
+              <h2 className="text-2xl font-bold text-sage">
+                {viewPeriod === 'daily' ? "Today's Meals" : 
+                 viewPeriod === 'weekly' ? "This Week's Meals" : 
+                 "This Month's Meals"}
+              </h2>
               <div className="flex gap-2">
                 <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                   <DialogTrigger asChild>
@@ -370,11 +539,31 @@ export default function NutritionTracker() {
                         </Select>
                       </div>
                       <div className="space-y-2">
+                        <div className="text-xs text-muted-foreground mb-2">
+                          Suggested for your {userProfile.cuisineType} preferences:
+                        </div>
+                        {getPersonalizedMealSuggestions()[selectedMealType]?.map((suggestion, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            className="w-full justify-start text-xs"
+                            onClick={() => addMealFromTemplate({
+                              name: suggestion,
+                              foods: mealTemplates[selectedMealType]?.[0]?.foods || []
+                            })}
+                          >
+                            <ChefHat className="h-4 w-4 mr-2" />
+                            {suggestion}
+                          </Button>
+                        ))}
+                        
+                        <Separator className="my-2" />
+                        <div className="text-xs text-muted-foreground mb-2">Default templates:</div>
                         {mealTemplates[selectedMealType]?.map((template, index) => (
                           <Button
                             key={index}
                             variant="outline"
-                            className="w-full justify-start"
+                            className="w-full justify-start text-xs"
                             onClick={() => addMealFromTemplate(template)}
                           >
                             <ChefHat className="h-4 w-4 mr-2" />
@@ -522,6 +711,71 @@ export default function NutritionTracker() {
                 </TabsContent>
               ))}
             </Tabs>
+          </div>
+
+          {/* Analytics Panel */}
+          <div className="xl:col-span-1 lg:col-span-1 hidden xl:block">
+            <Card className="sticky top-4">
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-sage flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-xs">
+                  <div className="font-medium mb-2">Weekly Trends</div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Avg Calories</span>
+                      <span>{Math.round(dailyTotals.calories)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Protein Goal</span>
+                      <span className={dailyTotals.protein >= goals.protein * 0.8 ? "text-sage" : "text-orange-500"}>
+                        {Math.round((dailyTotals.protein / goals.protein) * 100)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Fiber Intake</span>
+                      <span className={dailyTotals.fiber >= goals.fiber * 0.8 ? "text-sage" : "text-orange-500"}>
+                        {Math.round(dailyTotals.fiber)}g
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="text-xs">
+                  <div className="font-medium mb-2">Recommendations</div>
+                  <div className="space-y-2">
+                    {dailyTotals.protein < goals.protein * 0.8 && (
+                      <div className="p-2 bg-orange-50 dark:bg-orange-950 rounded text-orange-600 dark:text-orange-400">
+                        Add more protein sources
+                      </div>
+                    )}
+                    {dailyTotals.fiber < goals.fiber * 0.8 && (
+                      <div className="p-2 bg-orange-50 dark:bg-orange-950 rounded text-orange-600 dark:text-orange-400">
+                        Include more fiber-rich foods
+                      </div>
+                    )}
+                    {dailyTotals.calories < goals.calories * 0.7 && (
+                      <div className="p-2 bg-orange-50 dark:bg-orange-950 rounded text-orange-600 dark:text-orange-400">
+                        Consider increasing calorie intake
+                      </div>
+                    )}
+                    {dailyTotals.calories >= goals.calories * 0.8 && 
+                     dailyTotals.protein >= goals.protein * 0.8 && 
+                     dailyTotals.fiber >= goals.fiber * 0.8 && (
+                      <div className="p-2 bg-sage/10 rounded text-sage">
+                        Great job! You're meeting your goals
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
