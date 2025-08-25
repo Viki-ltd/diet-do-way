@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Target, Utensils, Activity } from "lucide-react";
+import { Plus, Target, Utensils, Activity, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface UserProfile {
   gender: 'male' | 'female' | 'other';
@@ -33,8 +34,26 @@ interface FoodEntry {
   timestamp: Date;
 }
 
+interface QuickMeal {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+}
+
+const quickMeals: QuickMeal[] = [
+  { name: "Greek Yogurt Bowl", calories: 250, protein: 20, carbs: 30, fat: 8, fiber: 5 },
+  { name: "Chicken Salad", calories: 350, protein: 35, carbs: 15, fat: 18, fiber: 8 },
+  { name: "Protein Smoothie", calories: 280, protein: 25, carbs: 35, fat: 6, fiber: 4 },
+  { name: "Salmon & Rice", calories: 450, protein: 30, carbs: 45, fat: 15, fiber: 3 },
+];
+
 export function NutritionTracker() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [currentIntake, setCurrentIntake] = useState({
     calories: 0,
     protein: 0,
@@ -104,17 +123,15 @@ export function NutritionTracker() {
 
   const goals = calculateGoals(userProfile);
 
-  const addFood = () => {
-    if (!newFood.name || !newFood.calories) return;
-    
+  const addQuickMeal = (meal: QuickMeal) => {
     const entry: FoodEntry = {
       id: Date.now().toString(),
-      name: newFood.name,
-      calories: Number(newFood.calories),
-      protein: Number(newFood.protein) || 0,
-      carbs: Number(newFood.carbs) || 0,
-      fat: Number(newFood.fat) || 0,
-      fiber: Number(newFood.fiber) || 0,
+      name: meal.name,
+      calories: meal.calories,
+      protein: meal.protein,
+      carbs: meal.carbs,
+      fat: meal.fat,
+      fiber: meal.fiber,
       timestamp: new Date()
     };
     
@@ -126,15 +143,7 @@ export function NutritionTracker() {
       fat: prev.fat + entry.fat,
       fiber: prev.fiber + entry.fiber
     }));
-    
-    setNewFood({
-      name: '',
-      calories: '',
-      protein: '',
-      carbs: '',
-      fat: '',
-      fiber: ''
-    });
+    setShowQuickAdd(false);
   };
 
   const getProgressColor = (current: number, goal: number) => {
@@ -164,16 +173,26 @@ export function NutritionTracker() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-medium text-sage flex items-center gap-2">
               <Target className="h-4 w-4" />
-              Daily Nutrition
+              Quick Nutrition
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8 p-0"
-            >
-              ✕
-            </Button>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/nutrition')}
+                className="h-8 px-2 text-xs"
+              >
+                Full Tracker
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           <div className="flex gap-1 flex-wrap">
             <Badge variant="outline" className="text-xs">
@@ -229,68 +248,54 @@ export function NutritionTracker() {
             </div>
           </div>
 
-          {/* Quick Add Food */}
-          <div className="border-t pt-2">
-            <div className="flex gap-1 mb-2">
-              <Input
-                placeholder="Food name"
-                value={newFood.name}
-                onChange={(e) => setNewFood(prev => ({ ...prev, name: e.target.value }))}
-                className="text-xs h-8"
-              />
-              <Input
-                placeholder="Cal"
-                value={newFood.calories}
-                onChange={(e) => setNewFood(prev => ({ ...prev, calories: e.target.value }))}
-                className="text-xs h-8 w-16"
-                type="number"
-              />
-              <Button size="sm" onClick={addFood} className="h-8 w-8 p-0">
-                <Plus className="h-3 w-3" />
+          {/* Quick Add Meals */}
+          <div className="border-t pt-3">
+            {!showQuickAdd ? (
+              <Button 
+                onClick={() => setShowQuickAdd(true)}
+                variant="outline" 
+                className="w-full text-xs h-8"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Quick Add Meal
               </Button>
-            </div>
-            
-            <div className="grid grid-cols-4 gap-1">
-              <Input
-                placeholder="P"
-                value={newFood.protein}
-                onChange={(e) => setNewFood(prev => ({ ...prev, protein: e.target.value }))}
-                className="text-xs h-6"
-                type="number"
-              />
-              <Input
-                placeholder="C"
-                value={newFood.carbs}
-                onChange={(e) => setNewFood(prev => ({ ...prev, carbs: e.target.value }))}
-                className="text-xs h-6"
-                type="number"
-              />
-              <Input
-                placeholder="F"
-                value={newFood.fat}
-                onChange={(e) => setNewFood(prev => ({ ...prev, fat: e.target.value }))}
-                className="text-xs h-6"
-                type="number"
-              />
-              <Input
-                placeholder="Fb"
-                value={newFood.fiber}
-                onChange={(e) => setNewFood(prev => ({ ...prev, fiber: e.target.value }))}
-                className="text-xs h-6"
-                type="number"
-              />
-            </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium">Quick Meals</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowQuickAdd(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                {quickMeals.map((meal, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => addQuickMeal(meal)}
+                    variant="outline"
+                    className="w-full justify-between text-xs h-8 p-2"
+                  >
+                    <span>{meal.name}</span>
+                    <span className="text-muted-foreground">{meal.calories}cal</span>
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Recent Foods */}
           {foodEntries.length > 0 && (
-            <div className="border-t pt-2 max-h-32 overflow-y-auto">
+            <div className="border-t pt-2 max-h-24 overflow-y-auto">
               <div className="text-xs text-muted-foreground mb-1">Recent:</div>
-              {foodEntries.slice(-3).map((entry) => (
+              {foodEntries.slice(-2).map((entry) => (
                 <div key={entry.id} className="text-xs py-1 border-b border-muted">
                   <div className="font-medium">{entry.name}</div>
                   <div className="text-muted-foreground">
-                    {entry.calories}cal • P:{entry.protein}g • C:{entry.carbs}g • F:{entry.fat}g
+                    {entry.calories}cal • P:{entry.protein}g • C:{entry.carbs}g
                   </div>
                 </div>
               ))}

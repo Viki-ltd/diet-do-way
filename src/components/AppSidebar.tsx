@@ -27,7 +27,8 @@ import {
   LogIn,
   Utensils,
   Users,
-  Calendar
+  Calendar,
+  Activity
 } from "lucide-react";
 
 const mainItems = [
@@ -48,6 +49,7 @@ const businessItems = [
 
 const userItems = [
   { title: "Profile", url: "/customer-profile", icon: User },
+  { title: "Nutrition Tracker", url: "/nutrition", icon: Activity },
   { title: "Monthly Subscriptions", url: "/dashboard", icon: Calendar },
   { title: "Submit Recipe", url: "/recipes/submit", icon: FileText },
   { title: "Settings", url: "/settings", icon: Settings },

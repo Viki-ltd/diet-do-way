@@ -5,7 +5,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
-import { NutritionTracker } from "@/components/NutritionTracker";
+import { NutritionTracker as NutritionWidget } from "@/components/NutritionTracker";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -24,6 +24,7 @@ import GiftHampers from "./pages/GiftHampers";
 import PreOrder from "./pages/PreOrder";
 import MadeInUAE from "./pages/MadeInUAE";
 import Settings from "./pages/Settings";
+import NutritionTracker from "./pages/NutritionTracker";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
                   <Route path="/made-in-uae" element={<MadeInUAE />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/customer-profile" element={<CustomerProfile />} />
+                  <Route path="/nutrition" element={<NutritionTracker />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
@@ -77,7 +79,7 @@ const App = () => (
             </div>
             
             {/* Sticky Nutrition Tracker */}
-            <NutritionTracker />
+            <NutritionWidget />
           </div>
         </SidebarProvider>
       </BrowserRouter>
