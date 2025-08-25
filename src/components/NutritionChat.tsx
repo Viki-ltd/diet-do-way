@@ -21,9 +21,10 @@ interface NutritionChatProps {
   currentIntake: any;
   goals: any;
   remaining: any;
+  embedded?: boolean;
 }
 
-export function NutritionChat({ isOpen, onOpenChange, onNutritionAdd, userProfile, currentIntake, goals, remaining }: NutritionChatProps) {
+export function NutritionChat({ isOpen, onOpenChange, onNutritionAdd, userProfile, currentIntake, goals, remaining, embedded = false }: NutritionChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -156,68 +157,80 @@ export function NutritionChat({ isOpen, onOpenChange, onNutritionAdd, userProfil
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+  const ChatContent = () => (
+    <>
+      {!embedded && (
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
             AI Nutrition Assistant
           </DialogTitle>
         </DialogHeader>
+      )}
         
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 p-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                    message.type === 'user'
-                      ? 'bg-sage text-white'
-                      : 'bg-muted text-foreground'
-                  }`}
-                >
-                  <div className="whitespace-pre-wrap">{message.content}</div>
-                  {message.nutritionData && (
-                    <div className="mt-2 pt-2 border-t border-current/20">
-                      <div className="font-medium">Nutrition Details:</div>
-                      <div>Serving: {message.nutritionData.serving}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Macro Suggestions */}
-            {remaining && remaining.calories > 50 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mr-4">
-                <div className="text-sm font-medium text-blue-800 mb-2">🤖 AI Macro Recommendations</div>
-                <div className="text-xs text-blue-700 space-y-1">
-                  {remaining.protein > 20 && (
-                    <div>• Add protein: Grilled chicken, Greek yogurt, or protein shake ({Math.round(remaining.protein)}g needed)</div>
-                  )}
-                  {remaining.carbs > 30 && (
-                    <div>• Add carbs: Brown rice, quinoa, or sweet potato ({Math.round(remaining.carbs)}g needed)</div>
-                  )}
-                  {remaining.fat > 15 && (
-                    <div>• Add healthy fats: Avocado, nuts, or olive oil ({Math.round(remaining.fat)}g needed)</div>
-                  )}
-                  {remaining.calories > 200 && (
-                    <div>• Total calories needed: {Math.round(remaining.calories)} calories</div>
-                  )}
-                </div>
-                <div className="text-xs text-orange-600 mt-2 font-medium">
-                  ⚠️ AI-powered suggestions - please consult your doctor
-                </div>
-              </div>
-            )}
+      <div className={`flex flex-col ${embedded ? 'h-[50vh]' : 'h-[60vh]'}`}>
+        {/* Macro recommendations */}
+        <div className="mb-4 p-3 bg-muted rounded-lg">
+          <div className="text-sm font-medium mb-2">💡 Smart Recommendations</div>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <div>Remaining calories: {remaining.calories} kcal</div>
+            <div>Need more protein: {remaining.protein}g</div>
+            <div>Carbs left: {remaining.carbs}g</div>
+            <div>Fat remaining: {remaining.fat}g</div>
           </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                  message.type === 'user'
+                    ? 'bg-sage text-white'
+                    : 'bg-muted text-foreground'
+                }`}
+              >
+                <div className="whitespace-pre-wrap">{message.content}</div>
+                {message.nutritionData && (
+                  <div className="mt-2 pt-2 border-t border-current/20">
+                    <div className="font-medium">Nutrition Details:</div>
+                    <div>Serving: {message.nutritionData.serving}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {/* Macro Suggestions */}
+          {remaining && remaining.calories > 50 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mr-4">
+              <div className="text-sm font-medium text-blue-800 mb-2">🤖 AI Macro Recommendations</div>
+              <div className="text-xs text-blue-700 space-y-1">
+                {remaining.protein > 20 && (
+                  <div>• Add protein: Grilled chicken, Greek yogurt, or protein shake ({Math.round(remaining.protein)}g needed)</div>
+                )}
+                {remaining.carbs > 30 && (
+                  <div>• Add carbs: Brown rice, quinoa, or sweet potato ({Math.round(remaining.carbs)}g needed)</div>
+                )}
+                {remaining.fat > 15 && (
+                  <div>• Add healthy fats: Avocado, nuts, or olive oil ({Math.round(remaining.fat)}g needed)</div>
+                )}
+                {remaining.calories > 200 && (
+                  <div>• Total calories needed: {Math.round(remaining.calories)} calories</div>
+                )}
+              </div>
+              <div className="text-xs text-orange-600 mt-2 font-medium">
+                ⚠️ AI-powered suggestions - please consult your doctor
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Input Area */}
         <div className="space-y-2">
@@ -276,7 +289,18 @@ export function NutritionChat({ isOpen, onOpenChange, onNutritionAdd, userProfil
             </div>
           </div>
         </div>
-        </div>
+      </div>
+    </>
+  );
+
+  if (embedded) {
+    return <ChatContent />;
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[80vh]">
+        <ChatContent />
       </DialogContent>
     </Dialog>
   );

@@ -34,94 +34,98 @@ export function HealthVerdict({ currentIntake, goals, userProfile }: HealthVerdi
   const generateVerdict = () => {
     const verdicts = [];
     
-    // Protein analysis
+    // Protein analysis - more encouraging
     const proteinRatio = currentIntake.protein / goals.protein;
     if (proteinRatio >= 0.8) {
       verdicts.push({
         type: 'positive',
         icon: CheckCircle,
-        title: 'Muscle Retention Strong',
-        description: 'Good protein intake supports muscle maintenance and growth'
+        title: 'Muscle Building On Track! 💪',
+        description: 'Great protein intake - your muscles are getting the fuel they need for growth and recovery'
       });
     } else if (proteinRatio < 0.6) {
       verdicts.push({
-        type: 'warning',
-        icon: AlertTriangle,
-        title: 'Low Protein Alert',
-        description: 'Insufficient protein may lead to muscle loss and fatigue'
+        type: 'info',
+        icon: TrendingUp,
+        title: 'Protein Boost Opportunity',
+        description: 'Add some protein-rich foods to maximize muscle preservation and energy'
       });
     }
 
-    // Fiber analysis
+    // Fiber analysis - positive spin
     const fiberRatio = currentIntake.fiber / goals.fiber;
-    if (fiberRatio < 0.5) {
+    if (fiberRatio >= 0.8) {
       verdicts.push({
-        type: 'warning',
-        icon: TrendingDown,
-        title: 'Digestive Health Risk',
-        description: 'Low fiber intake may cause digestive issues and poor gut health'
+        type: 'positive',
+        icon: CheckCircle,
+        title: 'Digestive Health Champion! 🌱',
+        description: 'Excellent fiber intake supports gut health and nutrient absorption'
       });
-    }
-
-    // Sodium analysis
-    const sodiumRatio = currentIntake.sodium / goals.sodium;
-    if (sodiumRatio > 1.2) {
-      verdicts.push({
-        type: 'warning',
-        icon: AlertTriangle,
-        title: 'High Sodium Intake',
-        description: 'Excess sodium may cause bloating and water retention'
-      });
-    }
-
-    // Sugar analysis
-    const sugarRatio = currentIntake.sugar / goals.sugar;
-    if (sugarRatio > 1.5) {
-      verdicts.push({
-        type: 'warning',
-        icon: TrendingDown,
-        title: 'Sugar Overload',
-        description: 'High sugar may cause energy crashes and skin issues'
-      });
-    }
-
-    // Calorie analysis
-    const calorieRatio = currentIntake.calories / goals.calories;
-    if (calorieRatio < 0.7) {
+    } else if (fiberRatio < 0.5) {
       verdicts.push({
         type: 'info',
         icon: Info,
-        title: 'Low Energy Intake',
-        description: 'Very low calories may slow metabolism and cause fatigue'
+        title: 'Fiber Focus Area',
+        description: 'Consider adding fruits, vegetables, or whole grains for better digestive wellness'
       });
-    } else if (calorieRatio > 1.3) {
+    }
+
+    // Hydration and energy insights
+    const calorieRatio = currentIntake.calories / goals.calories;
+    if (calorieRatio >= 0.9 && calorieRatio <= 1.1) {
       verdicts.push({
-        type: 'warning',
+        type: 'positive',
+        icon: CheckCircle,
+        title: 'Energy Balance Perfect! ⚡',
+        description: 'Your calorie intake is spot-on for your goals - great work!'
+      });
+    } else if (calorieRatio < 0.7) {
+      verdicts.push({
+        type: 'info',
         icon: TrendingUp,
-        title: 'Calorie Surplus',
-        description: 'High calorie intake may lead to unwanted weight gain'
+        title: 'Energy Boost Needed',
+        description: 'Consider adding nutrient-dense calories to fuel your metabolism optimally'
       });
     }
 
-    // Age-specific recommendations
-    if (userProfile.age > 40) {
-      if (currentIntake.calories < goals.calories * 0.8) {
-        verdicts.push({
-          type: 'info',
-          icon: Info,
-          title: 'Metabolism Support Needed',
-          description: 'Adequate calories important for maintaining metabolism after 40'
-        });
-      }
+    // Positive micronutrient insights
+    if (currentIntake.protein > 0 && currentIntake.fiber > 0) {
+      verdicts.push({
+        type: 'positive',
+        icon: CheckCircle,
+        title: 'Skin & Hair Glow Potential! ✨',
+        description: 'Good protein and fiber intake support healthy skin, hair, and nail growth'
+      });
     }
 
-    // Default positive message if no issues
+    // Sodium - constructive approach
+    const sodiumRatio = currentIntake.sodium / goals.sodium;
+    if (sodiumRatio <= 0.8) {
+      verdicts.push({
+        type: 'positive',
+        icon: CheckCircle,
+        title: 'Heart Health Champion! ❤️',
+        description: 'Moderate sodium intake supports cardiovascular wellness and reduces bloating'
+      });
+    }
+
+    // Age-specific positive reinforcement
+    if (userProfile.age > 40 && proteinRatio >= 0.8) {
+      verdicts.push({
+        type: 'positive',
+        icon: TrendingUp,
+        title: 'Aging Gracefully! 🌟',
+        description: 'Excellent protein intake helps maintain muscle mass and metabolic health after 40'
+      });
+    }
+
+    // Default encouraging message
     if (verdicts.length === 0) {
       verdicts.push({
         type: 'positive',
         icon: CheckCircle,
-        title: 'Balanced Nutrition',
-        description: 'Your nutrient intake looks well-balanced today!'
+        title: 'Great Foundation! 🎯',
+        description: 'You\'re building healthy eating habits - every nutritious choice counts!'
       });
     }
 

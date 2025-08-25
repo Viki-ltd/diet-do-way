@@ -14,7 +14,9 @@ import { StandardMealsManager } from "@/components/StandardMealsManager";
 import { CustomTargetsManager } from "@/components/CustomTargetsManager";
 import { MicronutrientPanel } from "@/components/MicronutrientPanel";
 import { HealthVerdict } from "@/components/HealthVerdict";
-import { Target, Utensils, Calendar, BarChart3, MessageCircle } from "lucide-react";
+import { VitaminLogger } from "@/components/VitaminLogger";
+import { MealsLogWithChat } from "@/components/MealsLogWithChat";
+import { Target, Utensils, Calendar, BarChart3, MessageCircle, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import { MealCard } from "@/components/MealCard";
 
 interface UserProfile {
@@ -85,14 +87,25 @@ interface CustomTargets {
   fiber?: number;
 }
 
+interface Supplement {
+  id: string;
+  name: string;
+  type: 'vitamin' | 'mineral' | 'supplement';
+  dosage: string;
+  unit: string;
+  timestamp: Date;
+  notes?: string;
+}
+
 export default function NutritionTracker() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [viewPeriod, setViewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isCustomTargetsOpen, setIsCustomTargetsOpen] = useState(false);
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
+  const [isCustomTargetsExpanded, setIsCustomTargetsExpanded] = useState(false);
   const [showNutritionChat, setShowNutritionChat] = useState(false);
   const [standardMeals, setStandardMeals] = useState<StandardMeal[]>([]);
   const [customTargets, setCustomTargets] = useState<CustomTargets>({});
+  const [supplements, setSupplements] = useState<Supplement[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     gender: 'female',
     age: 28,
@@ -322,10 +335,10 @@ export default function NutritionTracker() {
         <div className="grid grid-cols-12 gap-6">
           {/* LEFT SIDEBAR - All Settings & Controls */}
           <div className="col-span-12 lg:col-span-3 space-y-4">
-            {/* View Controls */}
+            {/* View Controls & Settings */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Controls</CardTitle>
+                <CardTitle className="text-sm font-medium">Controls & Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
@@ -342,35 +355,59 @@ export default function NutritionTracker() {
                   </Select>
                 </div>
                 
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsSettingsOpen(true)}
-                  className="w-full justify-start"
-                >
-                  <Target className="h-3 w-3 mr-2" />
-                  Profile Settings
-                </Button>
+                {/* Profile Settings Expandable */}
+                <div className="space-y-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+                    className="w-full justify-between"
+                  >
+                    <div className="flex items-center">
+                      <Target className="h-3 w-3 mr-2" />
+                      Profile Settings
+                    </div>
+                    {isSettingsExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </Button>
+                  
+                  {isSettingsExpanded && (
+                    <div className="pl-2">
+                      <NutritionSettings 
+                        isOpen={true}
+                        onOpenChange={setIsSettingsExpanded}
+                        profile={userProfile}
+                        onProfileUpdate={setUserProfile}
+                      />
+                    </div>
+                  )}
+                </div>
                 
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsCustomTargetsOpen(true)}
-                  className="w-full justify-start"
-                >
-                  <BarChart3 className="h-3 w-3 mr-2" />
-                  Custom Targets
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setShowNutritionChat(true)}
-                  className="w-full justify-start"
-                >
-                  <MessageCircle className="h-3 w-3 mr-2" />
-                  AI Nutrition Chat
-                </Button>
+                {/* Custom Targets Expandable */}
+                <div className="space-y-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setIsCustomTargetsExpanded(!isCustomTargetsExpanded)}
+                    className="w-full justify-between"
+                  >
+                    <div className="flex items-center">
+                      <BarChart3 className="h-3 w-3 mr-2" />
+                      Custom Targets
+                    </div>
+                    {isCustomTargetsExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </Button>
+                  
+                  {isCustomTargetsExpanded && (
+                    <div className="pl-2">
+                      <CustomTargetsManager 
+                        isOpen={true}
+                        onOpenChange={setIsCustomTargetsExpanded}
+                        customTargets={customTargets}
+                        onTargetsUpdate={setCustomTargets}
+                      />
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -379,6 +416,12 @@ export default function NutritionTracker() {
               standardMeals={standardMeals}
               onStandardMealsUpdate={setStandardMeals}
               onMealLog={addStandardMeal}
+            />
+
+            {/* Vitamin Logger */}
+            <VitaminLogger 
+              supplements={supplements}
+              onSupplementsUpdate={setSupplements}
             />
 
             {/* Health Verdict */}
@@ -423,31 +466,20 @@ export default function NutritionTracker() {
               </CardContent>
             </Card>
 
-            {/* Meals Log */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Meals Log</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {getAllMeals().length === 0 ? (
-                    <p className="text-center text-muted-foreground py-8">
-                      No meals logged for this period. Start by adding some food!
-                    </p>
-                  ) : (
-                    getAllMeals().map((meal) => (
-                      <MealCard
-                        key={meal.id}
-                        meal={meal}
-                        onEdit={editMeal}
-                        onDelete={deleteMeal}
-                        onSaveAsStandard={saveAsStandardMeal}
-                      />
-                    ))
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Meals Log with Integrated AI Chat */}
+            <MealsLogWithChat 
+              meals={meals}
+              onEditMeal={editMeal}
+              onDeleteMeal={deleteMeal}
+              onSaveAsStandard={saveAsStandardMeal}
+              onNutritionAdd={addNutritionFromChat}
+              userProfile={userProfile}
+              currentIntake={dailyTotals}
+              goals={goals}
+              remaining={remaining}
+              viewPeriod={viewPeriod}
+              getAllMeals={getAllMeals}
+            />
           </div>
 
           {/* RIGHT SIDEBAR - Micronutrients */}
@@ -458,21 +490,7 @@ export default function NutritionTracker() {
           </div>
         </div>
 
-        {/* Settings Dialogs */}
-        <NutritionSettings 
-          isOpen={isSettingsOpen}
-          onOpenChange={setIsSettingsOpen}
-          profile={userProfile}
-          onProfileUpdate={setUserProfile}
-        />
-
-        <CustomTargetsManager 
-          isOpen={isCustomTargetsOpen}
-          onOpenChange={setIsCustomTargetsOpen}
-          customTargets={customTargets}
-          onTargetsUpdate={setCustomTargets}
-        />
-
+        {/* Standalone AI Chat Dialog (for mobile or preference) */}
         <NutritionChat 
           isOpen={showNutritionChat}
           onOpenChange={setShowNutritionChat}

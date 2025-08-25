@@ -8,9 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Clock, Utensils, ChefHat, Trash2, Home, Store, Search } from "lucide-react";
+import { Plus, Clock, Utensils, ChefHat, Trash2, Home, Store, Search, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { searchFoods, foodDatabase, type FoodItem } from "@/utils/foodDatabase";
+import { AIStandardMealCreator } from "@/components/AIStandardMealCreator";
 
 interface StandardMeal {
   id: string;
@@ -37,6 +38,7 @@ interface StandardMealsManagerProps {
 
 export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onMealLog }: StandardMealsManagerProps) {
   const [isAddMealOpen, setIsAddMealOpen] = useState(false);
+  const [isAICreatorOpen, setIsAICreatorOpen] = useState(false);
   const [newMeal, setNewMeal] = useState<Partial<StandardMeal>>({
     name: '',
     mealType: 'breakfast',
@@ -143,18 +145,31 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
     }
   };
 
+  const handleAICreatedMeal = (aiMeal: any) => {
+    onStandardMealsUpdate([...standardMeals, aiMeal]);
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">Standard Meals</CardTitle>
-          <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-sage hover:bg-sage/90">
-                <Plus className="h-3 w-3 mr-1" />
-                Add
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-1">
+            <Button 
+              size="sm" 
+              onClick={() => setIsAICreatorOpen(true)}
+              className="bg-sage hover:bg-sage/90"
+            >
+              <Sparkles className="h-3 w-3 mr-1" />
+              AI Create
+            </Button>
+            <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <Plus className="h-3 w-3 mr-1" />
+                  Manual
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Create Standard Meal</DialogTitle>
@@ -295,6 +310,7 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
       </CardHeader>
       
@@ -343,6 +359,12 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
           ))
         )}
       </CardContent>
+      
+      <AIStandardMealCreator 
+        isOpen={isAICreatorOpen}
+        onOpenChange={setIsAICreatorOpen}
+        onMealCreated={handleAICreatedMeal}
+      />
     </Card>
   );
 }
