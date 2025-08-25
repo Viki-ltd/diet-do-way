@@ -16,6 +16,7 @@ import { StandardMealsManager } from "@/components/StandardMealsManager";
 import { CustomTargetsManager } from "@/components/CustomTargetsManager";
 import { MicronutrientPanel } from "@/components/MicronutrientPanel";
 import { Plus, Target, Utensils, Search, Clock, ChefHat, Trash2, Edit, Calendar, BarChart3, MessageCircle, Store, Home } from "lucide-react";
+import { MealCard } from "@/components/MealCard";
 
 interface UserProfile {
   gender: 'male' | 'female' | 'other';
@@ -96,65 +97,6 @@ const foodDatabase: FoodItem[] = [
   { id: '7', name: 'Salmon Fillet', calories: 208, protein: 22, carbs: 0, fat: 13, fiber: 0, sugar: 0, sodium: 93, serving: '100g' },
   { id: '8', name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3, sugar: 4.2, sodium: 7, serving: '100g' },
 ];
-
-// Predefined meals
-const mealTemplates = {
-  breakfast: [
-    {
-      name: "Mediterranean Breakfast",
-      foods: [
-        { ...foodDatabase[3], quantity: 1.5 }, // Greek Yogurt
-        { ...foodDatabase[4], quantity: 0.3 }, // Almonds
-        { name: "Honey", calories: 304, protein: 0.3, carbs: 82, fat: 0, fiber: 0.2, sugar: 82, sodium: 4, serving: "100g", quantity: 0.2 }
-      ]
-    },
-    {
-      name: "Protein Power Bowl",
-      foods: [
-        { ...foodDatabase[0], quantity: 0.8 }, // Chicken
-        { ...foodDatabase[5], quantity: 1 }, // Spinach
-        { ...foodDatabase[2], quantity: 0.5 }, // Avocado
-      ]
-    }
-  ],
-  lunch: [
-    {
-      name: "Balanced Lunch",
-      foods: [
-        { ...foodDatabase[0], quantity: 1.2 }, // Chicken
-        { ...foodDatabase[1], quantity: 0.8 }, // Brown Rice
-        { ...foodDatabase[5], quantity: 1 }, // Spinach
-      ]
-    },
-    {
-      name: "Salmon Power Bowl",
-      foods: [
-        { ...foodDatabase[6], quantity: 1 }, // Salmon
-        { ...foodDatabase[7], quantity: 1.5 }, // Sweet Potato
-        { ...foodDatabase[2], quantity: 0.5 }, // Avocado
-      ]
-    }
-  ],
-  dinner: [
-    {
-      name: "Light Dinner",
-      foods: [
-        { ...foodDatabase[6], quantity: 1.2 }, // Salmon
-        { ...foodDatabase[5], quantity: 2 }, // Spinach
-        { ...foodDatabase[4], quantity: 0.2 }, // Almonds
-      ]
-    }
-  ],
-  snack: [
-    {
-      name: "Healthy Snack",
-      foods: [
-        { ...foodDatabase[3], quantity: 1 }, // Greek Yogurt
-        { ...foodDatabase[4], quantity: 0.25 }, // Almonds
-      ]
-    }
-  ]
-};
 
 export default function NutritionTracker() {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -284,19 +226,6 @@ export default function NutritionTracker() {
     zinc: dailyTotals.calories * 0.005
   };
 
-  const addMealFromTemplate = (template: any) => {
-    const newMeal: Meal = {
-      id: Date.now().toString(),
-      name: template.name,
-      type: selectedMealType,
-      preparationType: preparationType,
-      foods: template.foods,
-      timestamp: new Date()
-    };
-    setMeals(prev => [...prev, newMeal]);
-    setIsAddMealOpen(false);
-  };
-
   const addStandardMeal = (standardMeal: StandardMeal) => {
     const newMeal: Meal = {
       id: Date.now().toString(),
@@ -307,12 +236,12 @@ export default function NutritionTracker() {
         id: Date.now().toString() + Math.random(),
         name: food.name,
         calories: food.calories * (standardMeal.preparationType === 'restaurant' ? 1.2 : 1), // 20% higher for restaurant
-        protein: food.protein * food.quantity,
-        carbs: food.carbs * food.quantity,
-        fat: food.fat * food.quantity,
-        fiber: food.fiber * food.quantity,
-        sugar: (food.carbs * 0.1) * food.quantity, // Estimate
-        sodium: (food.calories * 0.5) * food.quantity, // Estimate
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+        sugar: (food.carbs * 0.1), // Estimate
+        sodium: (food.calories * 0.5), // Estimate
         serving: food.serving,
         quantity: food.quantity
       })),
@@ -362,6 +291,14 @@ export default function NutritionTracker() {
     setMeals(prev => prev.filter(meal => meal.id !== mealId));
   };
 
+  const editMeal = (updatedMeal: Meal) => {
+    setMeals(prev => prev.map(meal => meal.id === updatedMeal.id ? updatedMeal : meal));
+  };
+
+  const saveAsStandardMeal = (standardMeal: StandardMeal) => {
+    setStandardMeals(prev => [...prev, standardMeal]);
+  };
+
   const filteredFoods = foodDatabase.filter(food =>
     food.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -404,6 +341,12 @@ export default function NutritionTracker() {
 
   const getPersonalizedMealSuggestions = () => {
     const { dietaryType, cuisineType } = userProfile;
+    const remaining = {
+      calories: Math.max(0, goals.calories - dailyTotals.calories),
+      protein: Math.max(0, goals.protein - dailyTotals.protein),
+      carbs: Math.max(0, goals.carbs - dailyTotals.carbs),
+      fat: Math.max(0, goals.fat - dailyTotals.fat)
+    };
     
     const suggestions = {
       mediterranean: {
@@ -438,7 +381,28 @@ export default function NutritionTracker() {
       }
     };
     
-    return suggestions[cuisineType] || suggestions.mixed;
+    const baseSuggestions = suggestions[cuisineType] || suggestions.mixed;
+    
+    // Add macro-specific suggestions based on remaining targets
+    const macroSuggestions = [];
+    if (remaining.protein > 20) {
+      macroSuggestions.push("🥩 Protein needed: Grilled chicken, Greek yogurt, or protein shake");
+    }
+    if (remaining.carbs > 30) {
+      macroSuggestions.push("🍚 Carbs needed: Brown rice, quinoa, or sweet potato");
+    }
+    if (remaining.fat > 15) {
+      macroSuggestions.push("🥑 Healthy fats needed: Avocado, nuts, or olive oil");
+    }
+    if (remaining.calories > 200) {
+      macroSuggestions.push("⚡ More calories needed: Consider a balanced meal or snack");
+    }
+    
+    return {
+      personalizedMeals: baseSuggestions,
+      macroSuggestions,
+      remaining
+    };
   };
 
   const getProgressColor = (current: number, goal: number) => {
@@ -479,485 +443,392 @@ export default function NutritionTracker() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <NutritionSettings 
-                    profile={userProfile}
-                    onProfileUpdate={setUserProfile}
-                    isOpen={isSettingsOpen}
-                    onOpenChange={setIsSettingsOpen}
-                  />
-                  <CustomTargetsManager
-                    customTargets={customTargets}
-                    onTargetsUpdate={setCustomTargets}
-                    isOpen={isCustomTargetsOpen}
-                    onOpenChange={setIsCustomTargetsOpen}
-                  />
-                </div>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="w-full justify-start"
+                >
+                  <Target className="h-3 w-3 mr-2" />
+                  Profile Settings
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setIsCustomTargetsOpen(true)}
+                  className="w-full justify-start"
+                >
+                  <BarChart3 className="h-3 w-3 mr-2" />
+                  Custom Targets
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowNutritionChat(!showNutritionChat)}
+                  className="w-full justify-start"
+                >
+                  <MessageCircle className="h-3 w-3 mr-2" />
+                  AI Assistant
+                </Button>
               </CardContent>
             </Card>
 
-            {/* Standard Meals */}
-            <StandardMealsManager
+            {/* Standard Meals Manager */}
+            <StandardMealsManager 
               standardMeals={standardMeals}
               onStandardMealsUpdate={setStandardMeals}
               onMealLog={addStandardMeal}
             />
 
-            {/* AI Assistant */}
-            <div className="space-y-2">
-              <Button
-                onClick={() => setShowNutritionChat(!showNutritionChat)}
-                variant={showNutritionChat ? "default" : "outline"}
-                className="w-full bg-sage hover:bg-sage/90"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                AI Nutrition Assistant
-              </Button>
-              
-              {showNutritionChat && (
-                <NutritionChat onNutritionAdded={addNutritionFromChat} />
-              )}
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="col-span-12 lg:col-span-6 xl:col-span-7">
-            {/* Goals Summary */}
-            <Card className="mb-6">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-sage" />
-                    {viewPeriod === 'daily' ? 'Daily' : viewPeriod === 'weekly' ? 'Weekly' : 'Monthly'} Goals
-                  </CardTitle>
-                  <div className="flex gap-2 flex-wrap">
-                    <Badge variant="outline">{userProfile.dietaryType}</Badge>
-                    <Badge variant="outline">{userProfile.goal} weight</Badge>
-                  </div>
-                </div>
+            {/* Smart Recommendations */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-sage">
+                  🤖 AI-Powered Smart Recommendations
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">Please consult your doctor for medical advice</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Calories */}
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Calories</span>
-                    <span className="font-medium">{Math.round(dailyTotals.calories)}/{goals.calories}</span>
-                  </div>
-                  <Progress 
-                    value={(dailyTotals.calories / goals.calories) * 100} 
-                    className="h-3"
-                  />
-                </div>
-
-                {/* Macronutrients */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Protein</span>
-                      <span>{Math.round(dailyTotals.protein)}g/{goals.protein}g</span>
-                    </div>
-                    <Progress value={(dailyTotals.protein / goals.protein) * 100} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Carbs</span>
-                      <span>{Math.round(dailyTotals.carbs)}g/{goals.carbs}g</span>
-                    </div>
-                    <Progress value={(dailyTotals.carbs / goals.carbs) * 100} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Fat</span>
-                      <span>{Math.round(dailyTotals.fat)}g/{goals.fat}g</span>
-                    </div>
-                    <Progress value={(dailyTotals.fat / goals.fat) * 100} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Fiber</span>
-                      <span>{Math.round(dailyTotals.fiber)}g/{goals.fiber}g</span>
-                    </div>
-                    <Progress value={(dailyTotals.fiber / goals.fiber) * 100} className="h-2" />
-                  </div>
-                </div>
-
-                {/* Additional nutrients */}
-                <Separator />
-                <div className="grid grid-cols-2 gap-4 text-xs">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Sugar</span>
-                      <span>{Math.round(dailyTotals.sugar)}g</span>
-                    </div>
-                    <Progress value={(dailyTotals.sugar / goals.sugar) * 100} className="h-1" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Sodium</span>
-                      <span>{Math.round(dailyTotals.sodium)}mg</span>
-                    </div>
-                    <Progress value={(dailyTotals.sodium / goals.sodium) * 100} className="h-1" />
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div className="grid grid-cols-4 gap-3 text-xs">
-                  <div className="text-center">
-                    <div className="font-medium">{Math.round(dailyTotals.fat * 0.3)}g</div>
-                    <div className="text-muted-foreground">Sat Fat</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-medium">{Math.round(dailyTotals.protein * 2)}mg</div>
-                    <div className="text-muted-foreground">Cholesterol</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-medium">{Math.round(dailyTotals.calories * 1.5)}mg</div>
-                    <div className="text-muted-foreground">Potassium</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-medium">{Object.keys(customTargets).length > 0 ? 'Custom' : 'Auto'}</div>
-                    <div className="text-muted-foreground">Targets</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Meal Tracking */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-sage">
-                {viewPeriod === 'daily' ? "Today's Meals" : 
-                 viewPeriod === 'weekly' ? "This Week's Meals" : 
-                 "This Month's Meals"}
-              </h2>
-              <div className="flex gap-2">
-                <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-sage hover:bg-sage/90">
-                      <ChefHat className="h-4 w-4 mr-2" />
-                      Add Meal
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add Meal Template</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Meal Type</Label>
-                          <Select value={selectedMealType} onValueChange={(value: any) => setSelectedMealType(value)}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="breakfast">Breakfast</SelectItem>
-                              <SelectItem value="lunch">Lunch</SelectItem>
-                              <SelectItem value="dinner">Dinner</SelectItem>
-                              <SelectItem value="snack">Snack</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label>Preparation</Label>
-                          <Select value={preparationType} onValueChange={(value: any) => setPreparationType(value)}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="home">
-                                <div className="flex items-center gap-2">
-                                  <Home className="h-3 w-3" />
-                                  Home Cooked
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="restaurant">
-                                <div className="flex items-center gap-2">
-                                  <Store className="h-3 w-3" />
-                                  Restaurant
-                                </div>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+              <CardContent>
+                <div className="space-y-3">
+                  {/* Macro-based suggestions */}
+                  {getPersonalizedMealSuggestions().macroSuggestions.length > 0 && (
+                    <div>
+                      <div className="text-xs font-medium text-muted-foreground mb-2">
+                        To Meet Your Targets
                       </div>
-                      <div className="space-y-2">
-                        <div className="text-xs text-muted-foreground mb-2">
-                          Suggested for your {userProfile.cuisineType} preferences:
-                        </div>
-                        {getPersonalizedMealSuggestions()[selectedMealType]?.map((suggestion, index) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            className="w-full justify-start text-xs"
-                            onClick={() => addMealFromTemplate({
-                              name: suggestion,
-                              foods: mealTemplates[selectedMealType]?.[0]?.foods || []
-                            })}
-                          >
-                            <ChefHat className="h-4 w-4 mr-2" />
+                      <div className="space-y-1">
+                        {getPersonalizedMealSuggestions().macroSuggestions.map((suggestion: string, idx: number) => (
+                          <div key={idx} className="text-xs text-foreground bg-sage/10 p-2 rounded border-l-2 border-sage">
                             {suggestion}
-                          </Button>
-                        ))}
-                        
-                        <Separator className="my-2" />
-                        <div className="text-xs text-muted-foreground mb-2">Default templates:</div>
-                        {mealTemplates[selectedMealType]?.map((template, index) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            className="w-full justify-start text-xs"
-                            onClick={() => addMealFromTemplate(template)}
-                          >
-                            <ChefHat className="h-4 w-4 mr-2" />
-                            {template.name}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
-                <Dialog open={isAddFoodOpen} onOpenChange={setIsAddFoodOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Food
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add Individual Food</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Meal Type</Label>
-                          <Select value={selectedMealType} onValueChange={(value: any) => setSelectedMealType(value)}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="breakfast">Breakfast</SelectItem>
-                              <SelectItem value="lunch">Lunch</SelectItem>
-                              <SelectItem value="dinner">Dinner</SelectItem>
-                              <SelectItem value="snack">Snack</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label>Preparation</Label>
-                          <Select value={preparationType} onValueChange={(value: any) => setPreparationType(value)}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="home">
-                                <div className="flex items-center gap-2">
-                                  <Home className="h-3 w-3" />
-                                  Home Cooked
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="restaurant">
-                                <div className="flex items-center gap-2">
-                                  <Store className="h-3 w-3" />
-                                  Restaurant
-                                </div>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Search foods..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {filteredFoods.map((food) => (
-                          <Button
-                            key={food.id}
-                            variant="outline"
-                            className="w-full justify-between"
-                            onClick={() => addIndividualFood(food)}
-                          >
-                            <span>{food.name}</span>
-                            <span className="text-xs text-muted-foreground">{food.calories} cal</span>
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-
-            <Tabs defaultValue="breakfast" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="breakfast">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Breakfast
-                </TabsTrigger>
-                <TabsTrigger value="lunch">
-                  <Utensils className="h-4 w-4 mr-2" />
-                  Lunch
-                </TabsTrigger>
-                <TabsTrigger value="dinner">
-                  <ChefHat className="h-4 w-4 mr-2" />
-                  Dinner
-                </TabsTrigger>
-                <TabsTrigger value="snack">
-                  Snacks
-                </TabsTrigger>
-              </TabsList>
-
-              {['breakfast', 'lunch', 'dinner', 'snack'].map((mealType) => (
-                <TabsContent key={mealType} value={mealType} className="space-y-3">
-                  {getMealsByType(mealType as any).length === 0 ? (
-                    <Card className="p-8 text-center">
-                      <p className="text-muted-foreground">No {mealType} logged yet</p>
-                    </Card>
-                  ) : (
-                    getMealsByType(mealType as any).map((meal) => (
-                      <Card key={meal.id}>
-                        <CardContent className="pt-6">
-                          <div className="flex justify-between items-start mb-3">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-medium">{meal.name}</h4>
-                                {meal.preparationType && (
-                                  <Badge variant="outline" className="text-xs flex items-center gap-1">
-                                    {meal.preparationType === 'home' ? <Home className="h-2 w-2" /> : <Store className="h-2 w-2" />}
-                                    {meal.preparationType}
-                                  </Badge>
-                                )}
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                {meal.timestamp.toLocaleTimeString()}
-                              </p>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteMeal(meal.id)}
-                              className="h-8 w-8 p-0"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
                           </div>
-                          
-                          <div className="space-y-2">
-                            {meal.foods.map((food, index) => (
-                              <div key={index} className="flex justify-between text-sm">
-                                <span>{food.name} ({food.quantity}x {food.serving})</span>
-                                <span>{Math.round(food.calories * food.quantity)} cal</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Cuisine-based suggestions */}
+                  <div>
+                    <div className="text-xs font-medium text-muted-foreground mb-2">
+                      Based on Your Preferences
+                    </div>
+                    <div className="space-y-2">
+                      {Object.entries(getPersonalizedMealSuggestions().personalizedMeals).map(([mealType, suggestions]) => (
+                        <div key={mealType}>
+                          <div className="text-xs font-medium text-muted-foreground capitalize mb-1">
+                            {mealType}
+                          </div>
+                          <div className="space-y-1">
+                            {(suggestions as string[]).slice(0, 1).map((suggestion: string, idx: number) => (
+                              <div key={idx} className="text-xs text-foreground bg-muted/50 p-2 rounded">
+                                {suggestion}
                               </div>
                             ))}
                           </div>
-                          
-                          <Separator className="my-3" />
-                          
-                          <div className="grid grid-cols-4 text-xs text-center">
-                            <div>
-                              <p className="font-medium">{Math.round(meal.foods.reduce((sum, food) => sum + food.calories * food.quantity, 0))}</p>
-                              <p className="text-muted-foreground">Calories</p>
-                            </div>
-                            <div>
-                              <p className="font-medium">{Math.round(meal.foods.reduce((sum, food) => sum + food.protein * food.quantity, 0))}g</p>
-                              <p className="text-muted-foreground">Protein</p>
-                            </div>
-                            <div>
-                              <p className="font-medium">{Math.round(meal.foods.reduce((sum, food) => sum + food.carbs * food.quantity, 0))}g</p>
-                              <p className="text-muted-foreground">Carbs</p>
-                            </div>
-                            <div>
-                              <p className="font-medium">{Math.round(meal.foods.reduce((sum, food) => sum + food.fat * food.quantity, 0))}g</p>
-                              <p className="text-muted-foreground">Fat</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  )}
-                </TabsContent>
-              ))}
-            </Tabs>
-          </div>
-
-          {/* Right Sidebar - Analytics & Micronutrients */}
-          <div className="col-span-12 lg:col-span-3 xl:col-span-3 space-y-4">
-            {/* Analytics Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-sage flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-xs">
-                  <div className="font-medium mb-2">{viewPeriod.charAt(0).toUpperCase() + viewPeriod.slice(1)} Overview</div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Avg Calories</span>
-                      <span>{Math.round(dailyTotals.calories)}</span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between">
-                      <span>Protein Goal</span>
-                      <span className={dailyTotals.protein >= goals.protein * 0.8 ? "text-sage" : "text-orange-500"}>
-                        {Math.round((dailyTotals.protein / goals.protein) * 100)}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Home vs Restaurant</span>
-                      <span className="text-xs">
-                        {Math.round((meals.filter(m => m.preparationType === 'home').length / Math.max(meals.length, 1)) * 100)}% home
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div className="text-xs">
-                  <div className="font-medium mb-2">Smart Recommendations</div>
-                  <div className="space-y-2">
-                    {dailyTotals.protein < goals.protein * 0.8 && (
-                      <div className="p-2 bg-orange-50 dark:bg-orange-950 rounded text-orange-600 dark:text-orange-400">
-                        Add more protein sources
-                      </div>
-                    )}
-                    {dailyTotals.fiber < goals.fiber * 0.8 && (
-                      <div className="p-2 bg-orange-50 dark:bg-orange-950 rounded text-orange-600 dark:text-orange-400">
-                        Include more fiber-rich foods
-                      </div>
-                    )}
-                    {meals.filter(m => m.preparationType === 'restaurant').length > meals.length * 0.6 && (
-                      <div className="p-2 bg-blue-50 dark:bg-blue-950 rounded text-blue-600 dark:text-blue-400">
-                        Consider more home-cooked meals
-                      </div>
-                    )}
-                    {dailyTotals.calories >= goals.calories * 0.8 && 
-                     dailyTotals.protein >= goals.protein * 0.8 && 
-                     dailyTotals.fiber >= goals.fiber * 0.8 && (
-                      <div className="p-2 bg-sage/10 rounded text-sage">
-                        Excellent! Meeting all goals
-                      </div>
-                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Micronutrients Panel */}
-            <MicronutrientPanel currentIntake={currentMicronutrients} />
+            {/* Nutrition Chat */}
+            {showNutritionChat && (
+              <NutritionChat onNutritionAdded={addNutritionFromChat} />
+            )}
+          </div>
+
+          {/* Main Content */}
+          <div className="col-span-12 lg:col-span-9 xl:col-span-10">
+            <div className="grid grid-cols-12 gap-6">
+              {/* Daily Progress Overview - Full Width */}
+              <div className="col-span-12">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold">Daily Overview</CardTitle>
+                      <Badge variant="outline" className="text-xs">
+                        {viewPeriod.charAt(0).toUpperCase() + viewPeriod.slice(1)} View
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      {/* Calories */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Calories</span>
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(dailyTotals.calories)}/{goals.calories}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={(dailyTotals.calories / goals.calories) * 100} 
+                          className="h-2"
+                        />
+                        <div className="text-xs text-center text-muted-foreground">
+                          {Math.round(goals.calories - dailyTotals.calories)} remaining
+                        </div>
+                      </div>
+
+                      {/* Protein */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Protein</span>
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(dailyTotals.protein)}g/{goals.protein}g
+                          </span>
+                        </div>
+                        <Progress 
+                          value={(dailyTotals.protein / goals.protein) * 100} 
+                          className="h-2"
+                        />
+                        <div className="text-xs text-center text-muted-foreground">
+                          {Math.round(goals.protein - dailyTotals.protein)}g left
+                        </div>
+                      </div>
+
+                      {/* Carbs */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Carbs</span>
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(dailyTotals.carbs)}g/{goals.carbs}g
+                          </span>
+                        </div>
+                        <Progress 
+                          value={(dailyTotals.carbs / goals.carbs) * 100} 
+                          className="h-2"
+                        />
+                        <div className="text-xs text-center text-muted-foreground">
+                          {Math.round(goals.carbs - dailyTotals.carbs)}g left
+                        </div>
+                      </div>
+
+                      {/* Fat */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Fat</span>
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(dailyTotals.fat)}g/{goals.fat}g
+                          </span>
+                        </div>
+                        <Progress 
+                          value={(dailyTotals.fat / goals.fat) * 100} 
+                          className="h-2"
+                        />
+                        <div className="text-xs text-center text-muted-foreground">
+                          {Math.round(goals.fat - dailyTotals.fat)}g left
+                        </div>
+                      </div>
+
+                      {/* Fiber */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Fiber</span>
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(dailyTotals.fiber)}g/{goals.fiber}g
+                          </span>
+                        </div>
+                        <Progress 
+                          value={(dailyTotals.fiber / goals.fiber) * 100} 
+                          className="h-2"
+                        />
+                        <div className="text-xs text-center text-muted-foreground">
+                          {Math.round(goals.fiber - dailyTotals.fiber)}g left
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Micronutrients Panel */}
+              <div className="col-span-12 lg:col-span-6">
+                <MicronutrientPanel currentIntake={currentMicronutrients} />
+              </div>
+
+              {/* Quick Add Actions */}
+              <div className="col-span-12 lg:col-span-6">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Meal Type</Label>
+                        <Select value={selectedMealType} onValueChange={(value: any) => setSelectedMealType(value)}>
+                          <SelectTrigger className="h-8">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="breakfast">Breakfast</SelectItem>
+                            <SelectItem value="lunch">Lunch</SelectItem>
+                            <SelectItem value="dinner">Dinner</SelectItem>
+                            <SelectItem value="snack">Snack</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Preparation</Label>
+                        <Select value={preparationType} onValueChange={(value: any) => setPreparationType(value)}>
+                          <SelectTrigger className="h-8">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="home">Home Cooked</SelectItem>
+                            <SelectItem value="restaurant">Restaurant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <Dialog open={isAddFoodOpen} onOpenChange={setIsAddFoodOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" className="w-full bg-sage hover:bg-sage/90">
+                          <Plus className="h-3 w-3 mr-2" />
+                          Add Food Item
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add Food Item</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <Input
+                            placeholder="Search foods..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="h-8"
+                          />
+                          <div className="max-h-64 overflow-y-auto space-y-2">
+                            {filteredFoods.map((food) => (
+                              <div key={food.id} className="flex items-center justify-between p-2 border rounded">
+                                <div>
+                                  <div className="font-medium text-sm">{food.name}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {food.calories} cal • {food.protein}g protein per {food.serving}
+                                  </div>
+                                </div>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => addIndividualFood(food)}
+                                  className="bg-sage hover:bg-sage/90"
+                                >
+                                  Add
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Meals Log - Full Width */}
+              <div className="col-span-12">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg font-semibold">Meals Log</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {/* All Meals in One Section */}
+                      {/* Breakfast */}
+                      {getMealsByType('breakfast').length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            Breakfast
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {getMealsByType('breakfast').map(meal => (
+                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Lunch */}
+                      {getMealsByType('lunch').length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <Utensils className="h-4 w-4" />
+                            Lunch
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {getMealsByType('lunch').map(meal => (
+                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Dinner */}
+                      {getMealsByType('dinner').length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <ChefHat className="h-4 w-4" />
+                            Dinner
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {getMealsByType('dinner').map(meal => (
+                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Snacks */}
+                      {getMealsByType('snack').length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <Utensils className="h-4 w-4" />
+                            Snacks
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {getMealsByType('snack').map(meal => (
+                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {meals.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Utensils className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p>No meals logged yet. Start by adding some food!</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Settings Dialogs */}
+      <NutritionSettings 
+        isOpen={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        profile={userProfile}
+        onProfileUpdate={setUserProfile}
+      />
+
+      <CustomTargetsManager 
+        isOpen={isCustomTargetsOpen}
+        onOpenChange={setIsCustomTargetsOpen}
+        customTargets={customTargets}
+        onCustomTargetsUpdate={setCustomTargets}
+      />
     </div>
   );
 }

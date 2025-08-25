@@ -54,7 +54,14 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
   const { toast } = useToast();
 
   const addFoodToMeal = () => {
-    if (!currentFood.name) return;
+    if (!currentFood.name || !currentFood.calories) {
+      toast({
+        title: "Error",
+        description: "Please enter food name and calories",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setNewMeal(prev => ({
       ...prev,
@@ -70,6 +77,11 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
       fiber: 0,
       serving: '',
       quantity: 1
+    });
+
+    toast({
+      title: "Food Added",
+      description: `${currentFood.name} added to meal`,
     });
   };
 

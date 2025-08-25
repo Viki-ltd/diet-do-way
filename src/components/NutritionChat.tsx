@@ -23,7 +23,7 @@ export function NutritionChat({ onNutritionAdded }: NutritionChatProps) {
     {
       id: '1',
       type: 'bot',
-      content: "Hi! I can help you track nutrition. Just tell me what you ate! For example: 'I had a grilled chicken salad with avocado' or upload a photo of your meal.",
+      content: "🤖 AI-Powered Nutrition Assistant (Please consult your doctor for medical advice)\n\nHi! I can help you track nutrition. Tell me what you ate or upload a photo! I can also suggest foods to meet your remaining macro targets.",
       timestamp: new Date()
     }
   ]);
