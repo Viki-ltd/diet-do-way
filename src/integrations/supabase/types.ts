@@ -16,14 +16,21 @@ export type Database = {
     Tables: {
       food_entries: {
         Row: {
+          calcium: number | null
           calories: number
           carbs: number
           created_at: string
           fat: number
           fiber: number | null
+          folate: number | null
           id: string
+          iron: number | null
+          magnesium: number | null
           meal_type: string | null
           name: string
+          phosphorus: number | null
+          potassium: number | null
+          preparation_type: string | null
           protein: number
           quantity: number | null
           serving_size: string | null
@@ -31,16 +38,34 @@ export type Database = {
           source: string | null
           sugar: number | null
           user_id: string
+          vitamin_a: number | null
+          vitamin_b1: number | null
+          vitamin_b12: number | null
+          vitamin_b2: number | null
+          vitamin_b3: number | null
+          vitamin_b6: number | null
+          vitamin_c: number | null
+          vitamin_d: number | null
+          vitamin_e: number | null
+          vitamin_k: number | null
+          zinc: number | null
         }
         Insert: {
+          calcium?: number | null
           calories: number
           carbs: number
           created_at?: string
           fat: number
           fiber?: number | null
+          folate?: number | null
           id?: string
+          iron?: number | null
+          magnesium?: number | null
           meal_type?: string | null
           name: string
+          phosphorus?: number | null
+          potassium?: number | null
+          preparation_type?: string | null
           protein: number
           quantity?: number | null
           serving_size?: string | null
@@ -48,16 +73,34 @@ export type Database = {
           source?: string | null
           sugar?: number | null
           user_id: string
+          vitamin_a?: number | null
+          vitamin_b1?: number | null
+          vitamin_b12?: number | null
+          vitamin_b2?: number | null
+          vitamin_b3?: number | null
+          vitamin_b6?: number | null
+          vitamin_c?: number | null
+          vitamin_d?: number | null
+          vitamin_e?: number | null
+          vitamin_k?: number | null
+          zinc?: number | null
         }
         Update: {
+          calcium?: number | null
           calories?: number
           carbs?: number
           created_at?: string
           fat?: number
           fiber?: number | null
+          folate?: number | null
           id?: string
+          iron?: number | null
+          magnesium?: number | null
           meal_type?: string | null
           name?: string
+          phosphorus?: number | null
+          potassium?: number | null
+          preparation_type?: string | null
           protein?: number
           quantity?: number | null
           serving_size?: string | null
@@ -65,6 +108,17 @@ export type Database = {
           source?: string | null
           sugar?: number | null
           user_id?: string
+          vitamin_a?: number | null
+          vitamin_b1?: number | null
+          vitamin_b12?: number | null
+          vitamin_b2?: number | null
+          vitamin_b3?: number | null
+          vitamin_b6?: number | null
+          vitamin_c?: number | null
+          vitamin_d?: number | null
+          vitamin_e?: number | null
+          vitamin_k?: number | null
+          zinc?: number | null
         }
         Relationships: []
       }
@@ -101,11 +155,17 @@ export type Database = {
           age: number | null
           created_at: string
           cuisine_type: string | null
+          custom_calories_target: number | null
+          custom_carbs_target: number | null
+          custom_fat_target: number | null
+          custom_fiber_target: number | null
+          custom_protein_target: number | null
           dietary_type: string | null
           gender: string | null
           goal: string | null
           height: number | null
           id: string
+          standard_meals: Json | null
           updated_at: string
           user_id: string
           weight: number | null
@@ -115,11 +175,17 @@ export type Database = {
           age?: number | null
           created_at?: string
           cuisine_type?: string | null
+          custom_calories_target?: number | null
+          custom_carbs_target?: number | null
+          custom_fat_target?: number | null
+          custom_fiber_target?: number | null
+          custom_protein_target?: number | null
           dietary_type?: string | null
           gender?: string | null
           goal?: string | null
           height?: number | null
           id?: string
+          standard_meals?: Json | null
           updated_at?: string
           user_id: string
           weight?: number | null
@@ -129,11 +195,17 @@ export type Database = {
           age?: number | null
           created_at?: string
           cuisine_type?: string | null
+          custom_calories_target?: number | null
+          custom_carbs_target?: number | null
+          custom_fat_target?: number | null
+          custom_fiber_target?: number | null
+          custom_protein_target?: number | null
           dietary_type?: string | null
           gender?: string | null
           goal?: string | null
           height?: number | null
           id?: string
+          standard_meals?: Json | null
           updated_at?: string
           user_id?: string
           weight?: number | null
