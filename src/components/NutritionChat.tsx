@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageCircle, Send, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   id: string;
@@ -15,15 +14,21 @@ interface ChatMessage {
 }
 
 interface NutritionChatProps {
-  onNutritionAdded: (nutrition: any) => void;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onNutritionAdd: (nutrition: any) => void;
+  userProfile: any;
+  currentIntake: any;
+  goals: any;
+  remaining: any;
 }
 
-export function NutritionChat({ onNutritionAdded }: NutritionChatProps) {
+export function NutritionChat({ isOpen, onOpenChange, onNutritionAdd, userProfile, currentIntake, goals, remaining }: NutritionChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       type: 'bot',
-      content: "🤖 AI-Powered Nutrition Assistant (Please consult your doctor for medical advice)\n\nHi! I can help you track nutrition. Tell me what you ate or upload a photo! I can also suggest foods to meet your remaining macro targets.",
+      content: "🤖 AI-Powered Nutrition Assistant\n\n⚠️ Please consult your doctor for medical advice\n\nHi! I can help you track nutrition. Tell me what you ate or upload a photo! I can also suggest foods to meet your remaining macro targets.",
       timestamp: new Date()
     }
   ]);
@@ -113,7 +118,7 @@ export function NutritionChat({ onNutritionAdded }: NutritionChatProps) {
       setInputText("");
       
       // Pass nutrition data to parent
-      onNutritionAdded(nutrition);
+      onNutritionAdd(nutrition);
       
       toast({
         title: "Nutrition Added",
@@ -151,41 +156,68 @@ export function NutritionChat({ onNutritionAdded }: NutritionChatProps) {
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Card className="h-96 flex flex-col">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-sage flex items-center gap-2">
-          <MessageCircle className="h-4 w-4" />
-          Nutrition Assistant
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="flex-1 flex flex-col">
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto space-y-2 mb-3">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <MessageCircle className="h-4 w-4" />
+            AI Nutrition Assistant
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="flex-1 flex flex-col min-h-0">
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto space-y-3 p-4">
+            {messages.map((message) => (
               <div
-                className={`max-w-[80%] p-2 rounded-lg text-xs ${
-                  message.type === 'user'
-                    ? 'bg-sage text-white'
-                    : 'bg-muted text-foreground'
-                }`}
+                key={message.id}
+                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className="whitespace-pre-wrap">{message.content}</div>
-                {message.nutritionData && (
-                  <div className="mt-2 pt-2 border-t border-current/20">
-                    <div className="font-medium">Nutrition Details:</div>
-                    <div>Serving: {message.nutritionData.serving}</div>
-                  </div>
-                )}
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                    message.type === 'user'
+                      ? 'bg-sage text-white'
+                      : 'bg-muted text-foreground'
+                  }`}
+                >
+                  <div className="whitespace-pre-wrap">{message.content}</div>
+                  {message.nutritionData && (
+                    <div className="mt-2 pt-2 border-t border-current/20">
+                      <div className="font-medium">Nutrition Details:</div>
+                      <div>Serving: {message.nutritionData.serving}</div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+
+            {/* Macro Suggestions */}
+            {remaining && remaining.calories > 50 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mr-4">
+                <div className="text-sm font-medium text-blue-800 mb-2">🤖 AI Macro Recommendations</div>
+                <div className="text-xs text-blue-700 space-y-1">
+                  {remaining.protein > 20 && (
+                    <div>• Add protein: Grilled chicken, Greek yogurt, or protein shake ({Math.round(remaining.protein)}g needed)</div>
+                  )}
+                  {remaining.carbs > 30 && (
+                    <div>• Add carbs: Brown rice, quinoa, or sweet potato ({Math.round(remaining.carbs)}g needed)</div>
+                  )}
+                  {remaining.fat > 15 && (
+                    <div>• Add healthy fats: Avocado, nuts, or olive oil ({Math.round(remaining.fat)}g needed)</div>
+                  )}
+                  {remaining.calories > 200 && (
+                    <div>• Total calories needed: {Math.round(remaining.calories)} calories</div>
+                  )}
+                </div>
+                <div className="text-xs text-orange-600 mt-2 font-medium">
+                  ⚠️ AI-powered suggestions - please consult your doctor
+                </div>
+              </div>
+            )}
+          </div>
 
         {/* Input Area */}
         <div className="space-y-2">
@@ -244,7 +276,8 @@ export function NutritionChat({ onNutritionAdded }: NutritionChatProps) {
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

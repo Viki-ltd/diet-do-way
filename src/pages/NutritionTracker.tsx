@@ -205,6 +205,14 @@ export default function NutritionTracker() {
 
   const dailyTotals = calculateDailyTotals();
 
+  // Calculate remaining macros
+  const remaining = {
+    calories: Math.max(0, goals.calories - dailyTotals.calories),
+    protein: Math.max(0, goals.protein - dailyTotals.protein),
+    carbs: Math.max(0, goals.carbs - dailyTotals.carbs),
+    fat: Math.max(0, goals.fat - dailyTotals.fat)
+  };
+
   // Mock micronutrient data (in real app, this would be calculated from food entries)
   const currentMicronutrients = {
     vitaminA: dailyTotals.calories * 0.3,
@@ -227,6 +235,7 @@ export default function NutritionTracker() {
   };
 
   const addStandardMeal = (standardMeal: StandardMeal) => {
+    const multiplier = standardMeal.preparationType === 'restaurant' ? 1.2 : 1;
     const newMeal: Meal = {
       id: Date.now().toString(),
       name: standardMeal.name,
@@ -235,13 +244,13 @@ export default function NutritionTracker() {
       foods: standardMeal.foods.map(food => ({
         id: Date.now().toString() + Math.random(),
         name: food.name,
-        calories: food.calories * (standardMeal.preparationType === 'restaurant' ? 1.2 : 1), // 20% higher for restaurant
-        protein: food.protein,
-        carbs: food.carbs,
-        fat: food.fat,
-        fiber: food.fiber,
-        sugar: (food.carbs * 0.1), // Estimate
-        sodium: (food.calories * 0.5), // Estimate
+        calories: food.calories * multiplier,
+        protein: food.protein * multiplier,
+        carbs: food.carbs * multiplier,
+        fat: food.fat * multiplier,
+        fiber: food.fiber * multiplier,
+        sugar: (food.carbs * 0.1) * multiplier,
+        sodium: (food.calories * 0.5) * multiplier,
         serving: food.serving,
         quantity: food.quantity
       })),
@@ -303,11 +312,9 @@ export default function NutritionTracker() {
     food.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getMealsByType = (type: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
+  const getAllMeals = () => {
     const filterDate = getFilterDate();
-    return meals.filter(meal => 
-      meal.type === type && isWithinPeriod(meal.timestamp, filterDate)
-    );
+    return meals.filter(meal => isWithinPeriod(meal.timestamp, filterDate));
   };
 
   const getFilterDate = () => {
@@ -339,72 +346,6 @@ export default function NutritionTracker() {
     }
   };
 
-  const getPersonalizedMealSuggestions = () => {
-    const { dietaryType, cuisineType } = userProfile;
-    const remaining = {
-      calories: Math.max(0, goals.calories - dailyTotals.calories),
-      protein: Math.max(0, goals.protein - dailyTotals.protein),
-      carbs: Math.max(0, goals.carbs - dailyTotals.carbs),
-      fat: Math.max(0, goals.fat - dailyTotals.fat)
-    };
-    
-    const suggestions = {
-      mediterranean: {
-        breakfast: ["Greek Yogurt with Honey & Nuts", "Olive Oil Toast with Tomatoes"],
-        lunch: ["Mediterranean Quinoa Bowl", "Grilled Fish with Vegetables"],
-        dinner: ["Salmon with Lemon & Herbs", "Chickpea Stew"],
-        snack: ["Hummus with Vegetables", "Mixed Nuts & Dried Fruits"]
-      },
-      asian: {
-        breakfast: ["Miso Soup with Tofu", "Rice Porridge with Ginger"],
-        lunch: ["Teriyaki Chicken Bowl", "Vegetable Stir Fry"],
-        dinner: ["Grilled Salmon Teriyaki", "Tofu Curry"],
-        snack: ["Edamame", "Green Tea with Almonds"]
-      },
-      'middle-eastern': {
-        breakfast: ["Shakshuka", "Labneh with Za'atar"],
-        lunch: ["Chicken Shawarma Bowl", "Falafel Salad"],
-        dinner: ["Grilled Lamb with Tabbouleh", "Stuffed Bell Peppers"],
-        snack: ["Dates with Nuts", "Cucumber with Hummus"]
-      },
-      western: {
-        breakfast: ["Avocado Toast", "Protein Smoothie Bowl"],
-        lunch: ["Grilled Chicken Salad", "Turkey Sandwich"],
-        dinner: ["Grilled Steak with Vegetables", "Baked Cod"],
-        snack: ["Apple with Peanut Butter", "Greek Yogurt"]
-      },
-      mixed: {
-        breakfast: ["Overnight Oats", "Protein Pancakes"],
-        lunch: ["Buddha Bowl", "Quinoa Salad"],
-        dinner: ["Lean Protein with Vegetables", "Lentil Curry"],
-        snack: ["Trail Mix", "Smoothie"]
-      }
-    };
-    
-    const baseSuggestions = suggestions[cuisineType] || suggestions.mixed;
-    
-    // Add macro-specific suggestions based on remaining targets
-    const macroSuggestions = [];
-    if (remaining.protein > 20) {
-      macroSuggestions.push("🥩 Protein needed: Grilled chicken, Greek yogurt, or protein shake");
-    }
-    if (remaining.carbs > 30) {
-      macroSuggestions.push("🍚 Carbs needed: Brown rice, quinoa, or sweet potato");
-    }
-    if (remaining.fat > 15) {
-      macroSuggestions.push("🥑 Healthy fats needed: Avocado, nuts, or olive oil");
-    }
-    if (remaining.calories > 200) {
-      macroSuggestions.push("⚡ More calories needed: Consider a balanced meal or snack");
-    }
-    
-    return {
-      personalizedMeals: baseSuggestions,
-      macroSuggestions,
-      remaining
-    };
-  };
-
   const getProgressColor = (current: number, goal: number) => {
     const percentage = (current / goal) * 100;
     if (percentage < 70) return "bg-orange-500";
@@ -424,7 +365,7 @@ export default function NutritionTracker() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Sidebar */}
           <div className="col-span-12 lg:col-span-3 xl:col-span-2 space-y-4">
-            {/* Period Filter & Settings */}
+            {/* View & Settings */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">View & Settings</CardTitle>
@@ -467,368 +408,203 @@ export default function NutritionTracker() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => setShowNutritionChat(!showNutritionChat)}
+                  onClick={() => setShowNutritionChat(true)}
                   className="w-full justify-start"
                 >
                   <MessageCircle className="h-3 w-3 mr-2" />
-                  AI Assistant
+                  AI Nutrition
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Standard Meals Manager */}
+            {/* Quick Add */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Dialog open={isAddFoodOpen} onOpenChange={setIsAddFoodOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full justify-start"
+                    >
+                      <Plus className="h-3 w-3 mr-2" />
+                      Add Food Item
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add Food Item</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs">Meal Type</Label>
+                          <Select value={selectedMealType} onValueChange={(value: any) => setSelectedMealType(value)}>
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="breakfast">Breakfast</SelectItem>
+                              <SelectItem value="lunch">Lunch</SelectItem>
+                              <SelectItem value="dinner">Dinner</SelectItem>
+                              <SelectItem value="snack">Snack</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Preparation</Label>
+                          <Select value={preparationType} onValueChange={(value: any) => setPreparationType(value)}>
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="home">Home</SelectItem>
+                              <SelectItem value="restaurant">Restaurant</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-xs">Search Food</Label>
+                        <Input
+                          placeholder="Search foods..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="h-8"
+                        />
+                      </div>
+                      
+                      <div className="max-h-48 overflow-y-auto space-y-1">
+                        {filteredFoods.map((food) => (
+                          <div key={food.id} className="flex items-center justify-between p-2 border rounded hover:bg-muted/50">
+                            <div className="text-xs">
+                              <div className="font-medium">{food.name}</div>
+                              <div className="text-muted-foreground">{food.calories} cal per {food.serving}</div>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => addIndividualFood(food)}
+                              className="h-6 px-2 text-xs"
+                            >
+                              Add
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+
+            {/* Standard Meals */}
             <StandardMealsManager 
               standardMeals={standardMeals}
               onStandardMealsUpdate={setStandardMeals}
               onMealLog={addStandardMeal}
             />
+          </div>
 
-            {/* Smart Recommendations */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-sage">
-                  🤖 AI-Powered Smart Recommendations
-                </CardTitle>
-                <p className="text-xs text-muted-foreground">Please consult your doctor for medical advice</p>
+          {/* Main Content */}
+          <div className="col-span-12 lg:col-span-6 xl:col-span-8">
+            {/* Progress Overview */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Today's Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {/* Macro-based suggestions */}
-                  {getPersonalizedMealSuggestions().macroSuggestions.length > 0 && (
-                    <div>
-                      <div className="text-xs font-medium text-muted-foreground mb-2">
-                        To Meet Your Targets
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {[
+                    { label: 'Calories', current: Math.round(dailyTotals.calories), goal: goals.calories, unit: 'kcal' },
+                    { label: 'Protein', current: Math.round(dailyTotals.protein), goal: goals.protein, unit: 'g' },
+                    { label: 'Carbs', current: Math.round(dailyTotals.carbs), goal: goals.carbs, unit: 'g' },
+                    { label: 'Fat', current: Math.round(dailyTotals.fat), goal: goals.fat, unit: 'g' },
+                    { label: 'Fiber', current: Math.round(dailyTotals.fiber), goal: goals.fiber, unit: 'g' },
+                  ].map((macro) => (
+                    <div key={macro.label} className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="font-medium">{macro.label}</span>
+                        <span>{macro.current}/{macro.goal}{macro.unit}</span>
                       </div>
-                      <div className="space-y-1">
-                        {getPersonalizedMealSuggestions().macroSuggestions.map((suggestion: string, idx: number) => (
-                          <div key={idx} className="text-xs text-foreground bg-sage/10 p-2 rounded border-l-2 border-sage">
-                            {suggestion}
-                          </div>
-                        ))}
+                      <Progress 
+                        value={(macro.current / macro.goal) * 100} 
+                        className="h-2"
+                      />
+                      <div className="text-xs text-muted-foreground">
+                        {Math.round((macro.current / macro.goal) * 100)}%
                       </div>
                     </div>
-                  )}
-                  
-                  {/* Cuisine-based suggestions */}
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground mb-2">
-                      Based on Your Preferences
-                    </div>
-                    <div className="space-y-2">
-                      {Object.entries(getPersonalizedMealSuggestions().personalizedMeals).map(([mealType, suggestions]) => (
-                        <div key={mealType}>
-                          <div className="text-xs font-medium text-muted-foreground capitalize mb-1">
-                            {mealType}
-                          </div>
-                          <div className="space-y-1">
-                            {(suggestions as string[]).slice(0, 1).map((suggestion: string, idx: number) => (
-                              <div key={idx} className="text-xs text-foreground bg-muted/50 p-2 rounded">
-                                {suggestion}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Nutrition Chat */}
-            {showNutritionChat && (
-              <NutritionChat onNutritionAdded={addNutritionFromChat} />
-            )}
+            {/* Meals Log */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Meals Log</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {getAllMeals().length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      No meals logged for this period. Start by adding some food!
+                    </p>
+                  ) : (
+                    getAllMeals().map((meal) => (
+                      <MealCard
+                        key={meal.id}
+                        meal={meal}
+                        onEdit={editMeal}
+                        onDelete={deleteMeal}
+                        onSaveAsStandard={saveAsStandardMeal}
+                      />
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Main Content */}
-          <div className="col-span-12 lg:col-span-9 xl:col-span-10">
-            <div className="grid grid-cols-12 gap-6">
-              {/* Daily Progress Overview - Full Width */}
-              <div className="col-span-12">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-semibold">Daily Overview</CardTitle>
-                      <Badge variant="outline" className="text-xs">
-                        {viewPeriod.charAt(0).toUpperCase() + viewPeriod.slice(1)} View
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      {/* Calories */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Calories</span>
-                          <span className="text-xs text-muted-foreground">
-                            {Math.round(dailyTotals.calories)}/{goals.calories}
-                          </span>
-                        </div>
-                        <Progress 
-                          value={(dailyTotals.calories / goals.calories) * 100} 
-                          className="h-2"
-                        />
-                        <div className="text-xs text-center text-muted-foreground">
-                          {Math.round(goals.calories - dailyTotals.calories)} remaining
-                        </div>
-                      </div>
-
-                      {/* Protein */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Protein</span>
-                          <span className="text-xs text-muted-foreground">
-                            {Math.round(dailyTotals.protein)}g/{goals.protein}g
-                          </span>
-                        </div>
-                        <Progress 
-                          value={(dailyTotals.protein / goals.protein) * 100} 
-                          className="h-2"
-                        />
-                        <div className="text-xs text-center text-muted-foreground">
-                          {Math.round(goals.protein - dailyTotals.protein)}g left
-                        </div>
-                      </div>
-
-                      {/* Carbs */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Carbs</span>
-                          <span className="text-xs text-muted-foreground">
-                            {Math.round(dailyTotals.carbs)}g/{goals.carbs}g
-                          </span>
-                        </div>
-                        <Progress 
-                          value={(dailyTotals.carbs / goals.carbs) * 100} 
-                          className="h-2"
-                        />
-                        <div className="text-xs text-center text-muted-foreground">
-                          {Math.round(goals.carbs - dailyTotals.carbs)}g left
-                        </div>
-                      </div>
-
-                      {/* Fat */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Fat</span>
-                          <span className="text-xs text-muted-foreground">
-                            {Math.round(dailyTotals.fat)}g/{goals.fat}g
-                          </span>
-                        </div>
-                        <Progress 
-                          value={(dailyTotals.fat / goals.fat) * 100} 
-                          className="h-2"
-                        />
-                        <div className="text-xs text-center text-muted-foreground">
-                          {Math.round(goals.fat - dailyTotals.fat)}g left
-                        </div>
-                      </div>
-
-                      {/* Fiber */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Fiber</span>
-                          <span className="text-xs text-muted-foreground">
-                            {Math.round(dailyTotals.fiber)}g/{goals.fiber}g
-                          </span>
-                        </div>
-                        <Progress 
-                          value={(dailyTotals.fiber / goals.fiber) * 100} 
-                          className="h-2"
-                        />
-                        <div className="text-xs text-center text-muted-foreground">
-                          {Math.round(goals.fiber - dailyTotals.fiber)}g left
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Micronutrients Panel */}
-              <div className="col-span-12 lg:col-span-6">
-                <MicronutrientPanel currentIntake={currentMicronutrients} />
-              </div>
-
-              {/* Quick Add Actions */}
-              <div className="col-span-12 lg:col-span-6">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label className="text-xs">Meal Type</Label>
-                        <Select value={selectedMealType} onValueChange={(value: any) => setSelectedMealType(value)}>
-                          <SelectTrigger className="h-8">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="breakfast">Breakfast</SelectItem>
-                            <SelectItem value="lunch">Lunch</SelectItem>
-                            <SelectItem value="dinner">Dinner</SelectItem>
-                            <SelectItem value="snack">Snack</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label className="text-xs">Preparation</Label>
-                        <Select value={preparationType} onValueChange={(value: any) => setPreparationType(value)}>
-                          <SelectTrigger className="h-8">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="home">Home Cooked</SelectItem>
-                            <SelectItem value="restaurant">Restaurant</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <Dialog open={isAddFoodOpen} onOpenChange={setIsAddFoodOpen}>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="w-full bg-sage hover:bg-sage/90">
-                          <Plus className="h-3 w-3 mr-2" />
-                          Add Food Item
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Add Food Item</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <Input
-                            placeholder="Search foods..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-8"
-                          />
-                          <div className="max-h-64 overflow-y-auto space-y-2">
-                            {filteredFoods.map((food) => (
-                              <div key={food.id} className="flex items-center justify-between p-2 border rounded">
-                                <div>
-                                  <div className="font-medium text-sm">{food.name}</div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {food.calories} cal • {food.protein}g protein per {food.serving}
-                                  </div>
-                                </div>
-                                <Button 
-                                  size="sm" 
-                                  onClick={() => addIndividualFood(food)}
-                                  className="bg-sage hover:bg-sage/90"
-                                >
-                                  Add
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Meals Log - Full Width */}
-              <div className="col-span-12">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-semibold">Meals Log</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {/* All Meals in One Section */}
-                      {/* Breakfast */}
-                      {getMealsByType('breakfast').length > 0 && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            Breakfast
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {getMealsByType('breakfast').map(meal => (
-                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Lunch */}
-                      {getMealsByType('lunch').length > 0 && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                            <Utensils className="h-4 w-4" />
-                            Lunch
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {getMealsByType('lunch').map(meal => (
-                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Dinner */}
-                      {getMealsByType('dinner').length > 0 && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                            <ChefHat className="h-4 w-4" />
-                            Dinner
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {getMealsByType('dinner').map(meal => (
-                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Snacks */}
-                      {getMealsByType('snack').length > 0 && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                            <Utensils className="h-4 w-4" />
-                            Snacks
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {getMealsByType('snack').map(meal => (
-                              <MealCard key={meal.id} meal={meal} onDelete={deleteMeal} onEdit={editMeal} onSaveAsStandard={saveAsStandardMeal} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {meals.length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <Utensils className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p>No meals logged yet. Start by adding some food!</p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+          {/* Right Sidebar */}
+          <div className="col-span-12 lg:col-span-3 xl:col-span-2 space-y-4">
+            <MicronutrientPanel 
+              currentIntake={currentMicronutrients}
+            />
           </div>
         </div>
+
+        {/* Settings Dialogs */}
+        <NutritionSettings 
+          isOpen={isSettingsOpen}
+          onOpenChange={setIsSettingsOpen}
+          profile={userProfile}
+          onProfileUpdate={setUserProfile}
+        />
+
+        {/* Nutrition Chat */}
+        <NutritionChat 
+          isOpen={showNutritionChat}
+          onOpenChange={setShowNutritionChat}
+          onNutritionAdd={addNutritionFromChat}
+          userProfile={userProfile}
+          currentIntake={dailyTotals}
+          goals={goals}
+          remaining={remaining}
+        />
+
+        {/* Custom Targets Manager */}
+        <CustomTargetsManager 
+          isOpen={isCustomTargetsOpen}
+          onOpenChange={setIsCustomTargetsOpen}
+          customTargets={customTargets}
+          onTargetsUpdate={setCustomTargets}
+        />
       </div>
-
-      {/* Settings Dialogs */}
-      <NutritionSettings 
-        isOpen={isSettingsOpen}
-        onOpenChange={setIsSettingsOpen}
-        profile={userProfile}
-        onProfileUpdate={setUserProfile}
-      />
-
-      <CustomTargetsManager 
-        isOpen={isCustomTargetsOpen}
-        onOpenChange={setIsCustomTargetsOpen}
-        customTargets={customTargets}
-        onTargetsUpdate={setCustomTargets}
-      />
     </div>
   );
 }
