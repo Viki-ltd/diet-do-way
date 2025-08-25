@@ -827,7 +827,7 @@ export default function NutritionTracker() {
         isOpen={isCustomTargetsOpen}
         onOpenChange={setIsCustomTargetsOpen}
         customTargets={customTargets}
-        onCustomTargetsUpdate={setCustomTargets}
+        onTargetsUpdate={setCustomTargets}
       />
     </div>
   );
