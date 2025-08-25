@@ -36,13 +36,13 @@ const mainItems = [
   { title: "Recipes", url: "/recipes", icon: ChefHat },
   { title: "Local Partners", url: "/local-business", icon: Building2 },
   { title: "Gift Hampers", url: "/gift-hampers", icon: Gift },
-  { title: "Affiliate Program", url: "/affiliate", icon: Users },
+  { title: "Made in UAE", url: "/made-in-uae", icon: Building2 },
 ];
 
 const businessItems = [
   { title: "Procurement Center", url: "/procurement", icon: Store },
-  { title: "Made in UAE", url: "/made-in-uae", icon: Building2 },
   { title: "Pre-Order (30% Off)", url: "/pre-order", icon: Calendar },
+  { title: "Affiliate Program", url: "/affiliate", icon: Users },
   { title: "Advertise", url: "/advertise", icon: Megaphone },
 ];
 

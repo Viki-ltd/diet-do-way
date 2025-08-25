@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
+import { NutritionTracker } from "@/components/NutritionTracker";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -74,6 +75,9 @@ const App = () => (
                 <Footer />
               </main>
             </div>
+            
+            {/* Sticky Nutrition Tracker */}
+            <NutritionTracker />
           </div>
         </SidebarProvider>
       </BrowserRouter>
