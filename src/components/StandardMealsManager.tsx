@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Clock, Utensils, ChefHat, Trash2, Home, Store } from "lucide-react";
+import { Plus, Clock, Utensils, ChefHat, Trash2, Home, Store, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { searchFoods, foodDatabase, type FoodItem } from "@/utils/foodDatabase";
 
 interface StandardMeal {
   id: string;
@@ -41,47 +43,35 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
     preparationType: 'home',
     foods: []
   });
-  const [currentFood, setCurrentFood] = useState({
-    name: '',
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0,
-    serving: '',
-    quantity: 1
-  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const { toast } = useToast();
 
-  const addFoodToMeal = () => {
-    if (!currentFood.name || !currentFood.calories) {
-      toast({
-        title: "Error",
-        description: "Please enter food name and calories",
-        variant: "destructive"
-      });
-      return;
-    }
+  const filteredFoods = searchFoods(searchTerm);
+
+  const addFoodFromDatabase = (food: FoodItem, quantity: number = selectedQuantity) => {
+    const foodItem = {
+      name: food.name,
+      calories: food.calories,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+      fiber: food.fiber,
+      serving: food.serving,
+      quantity: quantity
+    };
     
     setNewMeal(prev => ({
       ...prev,
-      foods: [...(prev.foods || []), { ...currentFood }]
+      foods: [...(prev.foods || []), foodItem]
     }));
     
-    setCurrentFood({
-      name: '',
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-      serving: '',
-      quantity: 1
-    });
+    setSearchTerm('');
+    setSelectedQuantity(1);
 
     toast({
       title: "Food Added",
-      description: `${currentFood.name} added to meal`,
+      description: `${food.name} added to meal with auto-calculated macros`,
     });
   };
 
@@ -219,74 +209,46 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
                 <Separator />
 
                 <div>
-                  <Label className="text-sm font-medium">Add Food Items</Label>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
-                    <Input
-                      placeholder="Food name"
-                      value={currentFood.name}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, name: e.target.value }))}
-                      className="h-8"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Calories"
-                      value={currentFood.calories || ''}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, calories: parseFloat(e.target.value) || 0 }))}
-                      className="h-8"
-                    />
+                  <Label className="text-sm font-medium">Add Foods (Auto-calculated macros)</Label>
+                  <div className="flex gap-2 mt-2">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search foods..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-8 pl-8"
+                      />
+                    </div>
                     <Input
                       type="number"
-                      placeholder="Protein (g)"
-                      value={currentFood.protein || ''}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, protein: parseFloat(e.target.value) || 0 }))}
-                      className="h-8"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Carbs (g)"
-                      value={currentFood.carbs || ''}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, carbs: parseFloat(e.target.value) || 0 }))}
-                      className="h-8"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Fat (g)"
-                      value={currentFood.fat || ''}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, fat: parseFloat(e.target.value) || 0 }))}
-                      className="h-8"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Fiber (g)"
-                      value={currentFood.fiber || ''}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, fiber: parseFloat(e.target.value) || 0 }))}
-                      className="h-8"
-                    />
-                    <Input
-                      placeholder="Serving size"
-                      value={currentFood.serving}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, serving: e.target.value }))}
-                      className="h-8"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Quantity"
-                      value={currentFood.quantity || ''}
-                      onChange={(e) => setCurrentFood(prev => ({ ...prev, quantity: parseFloat(e.target.value) || 1 }))}
-                      className="h-8"
+                      placeholder="Qty"
+                      value={selectedQuantity}
+                      onChange={(e) => setSelectedQuantity(parseFloat(e.target.value) || 1)}
+                      className="h-8 w-20"
                       step="0.1"
+                      min="0.1"
                     />
                   </div>
-                  <Button 
-                    onClick={addFoodToMeal}
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                    disabled={!currentFood.name}
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Add Food
-                  </Button>
+                  
+                  {searchTerm && (
+                    <div className="max-h-32 overflow-y-auto border rounded mt-2">
+                      {filteredFoods.slice(0, 5).map((food) => (
+                        <div key={food.id} className="flex items-center justify-between p-2 hover:bg-muted/50 cursor-pointer" 
+                             onClick={() => addFoodFromDatabase(food)}>
+                          <div className="text-xs">
+                            <div className="font-medium">{food.name}</div>
+                            <div className="text-muted-foreground">
+                              {food.calories}cal • P:{food.protein}g • C:{food.carbs}g • F:{food.fat}g per {food.serving}
+                            </div>
+                          </div>
+                          <Button size="sm" className="h-6 px-2 text-xs">
+                            Add
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {newMeal.foods && newMeal.foods.length > 0 && (
@@ -299,6 +261,9 @@ export function StandardMealsManager({ standardMeals, onStandardMealsUpdate, onM
                             <div className="font-medium">{food.name}</div>
                             <div className="text-muted-foreground">
                               {food.quantity}x {food.serving} • {Math.round(food.calories * food.quantity)} cal
+                              • P:{Math.round(food.protein * food.quantity)}g
+                              • C:{Math.round(food.carbs * food.quantity)}g
+                              • F:{Math.round(food.fat * food.quantity)}g
                             </div>
                           </div>
                           <Button

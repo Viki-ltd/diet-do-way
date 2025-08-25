@@ -1,21 +1,20 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import PageHeader from "@/components/PageHeader";
 import { NutritionChat } from "@/components/NutritionChat";
 import { NutritionSettings } from "@/components/NutritionSettings";
 import { StandardMealsManager } from "@/components/StandardMealsManager";
 import { CustomTargetsManager } from "@/components/CustomTargetsManager";
 import { MicronutrientPanel } from "@/components/MicronutrientPanel";
-import { Plus, Target, Utensils, Search, Clock, ChefHat, Trash2, Edit, Calendar, BarChart3, MessageCircle, Store, Home } from "lucide-react";
+import { HealthVerdict } from "@/components/HealthVerdict";
+import { Target, Utensils, Calendar, BarChart3, MessageCircle } from "lucide-react";
 import { MealCard } from "@/components/MealCard";
 
 interface UserProfile {
@@ -86,25 +85,8 @@ interface CustomTargets {
   fiber?: number;
 }
 
-// Mock food database
-const foodDatabase: FoodItem[] = [
-  { id: '1', name: 'Grilled Chicken Breast', calories: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0, sugar: 0, sodium: 74, serving: '100g' },
-  { id: '2', name: 'Brown Rice', calories: 111, protein: 2.6, carbs: 23, fat: 0.9, fiber: 1.8, sugar: 0.4, sodium: 5, serving: '100g cooked' },
-  { id: '3', name: 'Avocado', calories: 160, protein: 2, carbs: 9, fat: 15, fiber: 7, sugar: 0.7, sodium: 7, serving: '100g' },
-  { id: '4', name: 'Greek Yogurt', calories: 59, protein: 10, carbs: 3.6, fat: 0.4, fiber: 0, sugar: 3.6, sodium: 36, serving: '100g' },
-  { id: '5', name: 'Almonds', calories: 579, protein: 21, carbs: 22, fat: 50, fiber: 12, sugar: 4.4, sodium: 1, serving: '100g' },
-  { id: '6', name: 'Spinach', calories: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2, sugar: 0.4, sodium: 79, serving: '100g' },
-  { id: '7', name: 'Salmon Fillet', calories: 208, protein: 22, carbs: 0, fat: 13, fiber: 0, sugar: 0, sodium: 93, serving: '100g' },
-  { id: '8', name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3, sugar: 4.2, sodium: 7, serving: '100g' },
-];
-
 export default function NutritionTracker() {
   const [meals, setMeals] = useState<Meal[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
-  const [preparationType, setPreparationType] = useState<'home' | 'restaurant'>('home');
-  const [isAddFoodOpen, setIsAddFoodOpen] = useState(false);
-  const [isAddMealOpen, setIsAddMealOpen] = useState(false);
   const [viewPeriod, setViewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCustomTargetsOpen, setIsCustomTargetsOpen] = useState(false);
@@ -213,7 +195,7 @@ export default function NutritionTracker() {
     fat: Math.max(0, goals.fat - dailyTotals.fat)
   };
 
-  // Mock micronutrient data (in real app, this would be calculated from food entries)
+  // Mock micronutrient data
   const currentMicronutrients = {
     vitaminA: dailyTotals.calories * 0.3,
     vitaminC: dailyTotals.calories * 0.02,
@@ -259,20 +241,6 @@ export default function NutritionTracker() {
     setMeals(prev => [...prev, newMeal]);
   };
 
-  const addIndividualFood = (food: FoodItem, quantity: number = 1) => {
-    const adjustedCalories = food.calories * (preparationType === 'restaurant' ? 1.2 : 1);
-    const newMeal: Meal = {
-      id: Date.now().toString(),
-      name: food.name,
-      type: selectedMealType,
-      preparationType: preparationType,
-      foods: [{ ...food, calories: adjustedCalories, quantity }],
-      timestamp: new Date()
-    };
-    setMeals(prev => [...prev, newMeal]);
-    setIsAddFoodOpen(false);
-  };
-
   const addNutritionFromChat = (nutrition: any) => {
     const newMeal: Meal = {
       id: Date.now().toString(),
@@ -308,10 +276,6 @@ export default function NutritionTracker() {
     setStandardMeals(prev => [...prev, standardMeal]);
   };
 
-  const filteredFoods = foodDatabase.filter(food =>
-    food.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const getAllMeals = () => {
     const filterDate = getFilterDate();
     return meals.filter(meal => isWithinPeriod(meal.timestamp, filterDate));
@@ -346,13 +310,6 @@ export default function NutritionTracker() {
     }
   };
 
-  const getProgressColor = (current: number, goal: number) => {
-    const percentage = (current / goal) * 100;
-    if (percentage < 70) return "bg-orange-500";
-    if (percentage > 110) return "bg-red-500";
-    return "bg-sage";
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <PageHeader 
@@ -361,14 +318,14 @@ export default function NutritionTracker() {
         imageUrl="/placeholder.svg"
       />
       
-      <div className="container mx-auto px-4 py-8 max-w-full">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-12 gap-6">
-          {/* Left Sidebar */}
-          <div className="col-span-12 lg:col-span-3 xl:col-span-2 space-y-4">
-            {/* View & Settings */}
+          {/* LEFT SIDEBAR - All Settings & Controls */}
+          <div className="col-span-12 lg:col-span-3 space-y-4">
+            {/* View Controls */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">View & Settings</CardTitle>
+                <CardTitle className="text-sm font-medium">Controls</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
@@ -412,105 +369,28 @@ export default function NutritionTracker() {
                   className="w-full justify-start"
                 >
                   <MessageCircle className="h-3 w-3 mr-2" />
-                  AI Nutrition
+                  AI Nutrition Chat
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Quick Add */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Quick Add</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Dialog open={isAddFoodOpen} onOpenChange={setIsAddFoodOpen}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full justify-start"
-                    >
-                      <Plus className="h-3 w-3 mr-2" />
-                      Add Food Item
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add Food Item</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label className="text-xs">Meal Type</Label>
-                          <Select value={selectedMealType} onValueChange={(value: any) => setSelectedMealType(value)}>
-                            <SelectTrigger className="h-8">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="breakfast">Breakfast</SelectItem>
-                              <SelectItem value="lunch">Lunch</SelectItem>
-                              <SelectItem value="dinner">Dinner</SelectItem>
-                              <SelectItem value="snack">Snack</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Preparation</Label>
-                          <Select value={preparationType} onValueChange={(value: any) => setPreparationType(value)}>
-                            <SelectTrigger className="h-8">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="home">Home</SelectItem>
-                              <SelectItem value="restaurant">Restaurant</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <Label className="text-xs">Search Food</Label>
-                        <Input
-                          placeholder="Search foods..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="h-8"
-                        />
-                      </div>
-                      
-                      <div className="max-h-48 overflow-y-auto space-y-1">
-                        {filteredFoods.map((food) => (
-                          <div key={food.id} className="flex items-center justify-between p-2 border rounded hover:bg-muted/50">
-                            <div className="text-xs">
-                              <div className="font-medium">{food.name}</div>
-                              <div className="text-muted-foreground">{food.calories} cal per {food.serving}</div>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => addIndividualFood(food)}
-                              className="h-6 px-2 text-xs"
-                            >
-                              Add
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardContent>
-            </Card>
-
-            {/* Standard Meals */}
+            {/* Standard Meals Manager */}
             <StandardMealsManager 
               standardMeals={standardMeals}
               onStandardMealsUpdate={setStandardMeals}
               onMealLog={addStandardMeal}
             />
+
+            {/* Health Verdict */}
+            <HealthVerdict 
+              currentIntake={dailyTotals}
+              goals={goals}
+              userProfile={userProfile}
+            />
           </div>
 
-          {/* Main Content */}
-          <div className="col-span-12 lg:col-span-6 xl:col-span-8">
+          {/* MIDDLE COLUMN - Main Content */}
+          <div className="col-span-12 lg:col-span-6">
             {/* Progress Overview */}
             <Card className="mb-6">
               <CardHeader>
@@ -570,8 +450,8 @@ export default function NutritionTracker() {
             </Card>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="col-span-12 lg:col-span-3 xl:col-span-2 space-y-4">
+          {/* RIGHT SIDEBAR - Micronutrients */}
+          <div className="col-span-12 lg:col-span-3">
             <MicronutrientPanel 
               currentIntake={currentMicronutrients}
             />
@@ -586,7 +466,13 @@ export default function NutritionTracker() {
           onProfileUpdate={setUserProfile}
         />
 
-        {/* Nutrition Chat */}
+        <CustomTargetsManager 
+          isOpen={isCustomTargetsOpen}
+          onOpenChange={setIsCustomTargetsOpen}
+          customTargets={customTargets}
+          onTargetsUpdate={setCustomTargets}
+        />
+
         <NutritionChat 
           isOpen={showNutritionChat}
           onOpenChange={setShowNutritionChat}
@@ -595,14 +481,6 @@ export default function NutritionTracker() {
           currentIntake={dailyTotals}
           goals={goals}
           remaining={remaining}
-        />
-
-        {/* Custom Targets Manager */}
-        <CustomTargetsManager 
-          isOpen={isCustomTargetsOpen}
-          onOpenChange={setIsCustomTargetsOpen}
-          customTargets={customTargets}
-          onTargetsUpdate={setCustomTargets}
         />
       </div>
     </div>
